@@ -1,0 +1,164 @@
+{
+  "tests": [
+    {
+      "name": "1. El codigo compila sin errores",
+      "setup": "",
+      "run": "gcc -Wall -Wextra -std=c99 src/programa.c src/carrito.c -o programa_ci",
+      "input": "",
+      "output": "",
+      "comparison": "included",
+      "timeout": 10,
+      "points": 5
+    },
+    {
+      "name": "2. test_unitarios compila",
+      "setup": "",
+      "run": "gcc -Wall -Wextra -std=c99 tests/test_unitarios.c src/carrito.c -o test_unitarios_ci",
+      "input": "",
+      "output": "",
+      "comparison": "included",
+      "timeout": 10,
+      "points": 5
+    },
+    {
+      "name": "3. test_integracion compila",
+      "setup": "",
+      "run": "gcc -Wall -Wextra -std=c99 tests/test_integracion.c src/carrito.c -o test_integracion_ci",
+      "input": "",
+      "output": "",
+      "comparison": "included",
+      "timeout": 10,
+      "points": 5
+    },
+    {
+      "name": "4. test_unitarios pasa (bugs corregidos)",
+      "setup": "gcc -Wall -Wextra -std=c99 tests/test_unitarios.c src/carrito.c -o test_unitarios_ci",
+      "run": "./test_unitarios_ci",
+      "input": "",
+      "output": "",
+      "comparison": "included",
+      "timeout": 10,
+      "points": 15
+    },
+    {
+      "name": "5. test_integracion tiene al menos un test y pasa",
+      "setup": "gcc -Wall -Wextra -std=c99 tests/test_integracion.c src/carrito.c -o test_integracion_ci",
+      "run": "./test_integracion_ci | grep -q \"\\[OK\\]\"",
+      "input": "",
+      "output": "",
+      "comparison": "included",
+      "timeout": 10,
+      "points": 10
+    },
+    {
+      "name": "6. El programa imprime el total correcto (2800)",
+      "setup": "gcc -Wall -Wextra -std=c99 src/programa.c src/carrito.c -o programa_ci",
+      "run": "./programa_ci | grep -q '2800'",
+      "input": "",
+      "output": "",
+      "comparison": "included",
+      "timeout": 10,
+      "points": 10
+    },
+    {
+      "name": "7. salidas/test_unitarios.txt existe",
+      "setup": "",
+      "run": "test -f salidas/test_unitarios.txt",
+      "input": "",
+      "output": "",
+      "comparison": "included",
+      "timeout": 5,
+      "points": 3
+    },
+    {
+      "name": "8. salidas/test_integracion.txt existe",
+      "setup": "",
+      "run": "test -f salidas/test_integracion.txt",
+      "input": "",
+      "output": "",
+      "comparison": "included",
+      "timeout": 5,
+      "points": 3
+    },
+    {
+      "name": "R1. Respuesta: TOTAL_PROGRAMA=2050",
+      "setup": "",
+      "run": "grep -qE '^TOTAL_PROGRAMA=2050$' proceso_testing.md",
+      "input": "",
+      "output": "",
+      "comparison": "included",
+      "timeout": 5,
+      "points": 5
+    },
+    {
+      "name": "R2. Respuesta: TEST_PRECIO_UNITARIO_PASA=SI",
+      "setup": "",
+      "run": "grep -qiE '^TEST_PRECIO_UNITARIO_PASA=SI$' proceso_testing.md",
+      "input": "",
+      "output": "",
+      "comparison": "included",
+      "timeout": 5,
+      "points": 5
+    },
+    {
+      "name": "R3. Respuesta: TEST_TOTAL_CANTIDAD_PASA=NO",
+      "setup": "",
+      "run": "grep -qiE '^TEST_TOTAL_CANTIDAD_PASA=NO$' proceso_testing.md",
+      "input": "",
+      "output": "",
+      "comparison": "included",
+      "timeout": 5,
+      "points": 5
+    },
+    {
+      "name": "R4. Respuesta: TESTS_UNITARIOS_PASAN=SI",
+      "setup": "",
+      "run": "grep -qiE '^TESTS_UNITARIOS_PASAN=SI$' proceso_testing.md",
+      "input": "",
+      "output": "",
+      "comparison": "included",
+      "timeout": 5,
+      "points": 5
+    },
+    {
+      "name": "R5. Respuesta: TEST_INTEGRACION_PASA=SI",
+      "setup": "",
+      "run": "grep -qiE '^TEST_INTEGRACION_PASA=SI$' proceso_testing.md",
+      "input": "",
+      "output": "",
+      "comparison": "included",
+      "timeout": 5,
+      "points": 5
+    },
+    {
+      "name": "R6. Respuesta: BUG_EN_FUNCION_1=carrito_total",
+      "setup": "",
+      "run": "grep -qiE '^BUG_EN_FUNCION_1=carrito_total$' proceso_testing.md",
+      "input": "",
+      "output": "",
+      "comparison": "included",
+      "timeout": 5,
+      "points": 7
+    },
+    {
+      "name": "R7. Respuesta: BUG_EN_FUNCION_2=carrito_agregar",
+      "setup": "",
+      "run": "grep -qiE '^BUG_EN_FUNCION_2=carrito_agregar$' proceso_testing.md",
+      "input": "",
+      "output": "",
+      "comparison": "included",
+      "timeout": 5,
+      "points": 7
+    },
+    {
+      "name": "R8. Respuesta: COBERTURA_COMPLETA tiene valor",
+      "setup": "",
+      "run": "grep -qiE '^COBERTURA_COMPLETA=(SI|NO)$' proceso_testing.md",
+      "input": "",
+      "output": "",
+      "comparison": "included",
+      "timeout": 5,
+      "points": 5
+    }
+  ]
+}
