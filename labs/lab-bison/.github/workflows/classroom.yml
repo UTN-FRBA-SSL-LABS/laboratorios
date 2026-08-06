@@ -1,0 +1,246 @@
+name: Autograding
+
+on:
+  push:
+    branches: [ "**" ]
+    paths:
+      - "**/*.y"
+      - "**/*.l"
+      - "README.md"
+
+permissions:
+  checks: write
+  actions: read
+  contents: read
+
+jobs:
+  autograding:
+    name: Autograding
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout del repositorio
+        uses: actions/checkout@v4
+
+      - name: Instalar Bison, Flex y GCC
+        run: sudo apt-get install -y bison flex gcc
+
+      # ── Ejercicio 1: reglas gramaticales y acciones semánticas ──────
+
+      - name: "E1. parser1.y compila"
+        id: e1_compile
+        continue-on-error: true
+        run: cd ejercicio1 && bison -d parser1.y && flex scanner1.l && gcc lex.yy.c parser1.tab.c -o calc1
+
+      - name: "E1. Calcula suma correctamente (3 + 4 = 7)"
+        id: e1_suma
+        continue-on-error: true
+        run: cd ejercicio1 && echo '3 + 4' | ./calc1 | grep -q '= 7'
+
+      - name: "E1. Calcula resta correctamente (10 - 3 = 7)"
+        id: e1_resta
+        continue-on-error: true
+        run: cd ejercicio1 && echo '10 - 3' | ./calc1 | grep -q '= 7'
+
+      - name: "E1. Calcula multiplicacion correctamente (2 * 5 = 10)"
+        id: e1_mult
+        continue-on-error: true
+        run: cd ejercicio1 && echo '2 * 5' | ./calc1 | grep -q '= 10'
+
+      - name: "E1. Calcula division correctamente (8 / 2 = 4)"
+        id: e1_div
+        continue-on-error: true
+        run: cd ejercicio1 && echo '8 / 2' | ./calc1 | grep -q '= 4'
+
+      # ── Ejercicio 2: %union y tokens tipados ────────────────────────
+
+      - name: "E2. parser2.y compila"
+        id: e2_compile
+        continue-on-error: true
+        run: cd ejercicio2 && bison -d parser2.y && flex scanner2.l && gcc lex.yy.c parser2.tab.c -o calc2
+
+      - name: "E2. Usa %union con miembro str_val"
+        id: e2_union
+        continue-on-error: true
+        run: grep -q 'str_val' ejercicio2/parser2.y
+
+      - name: "E2. Declara token IDENT"
+        id: e2_ident_decl
+        continue-on-error: true
+        run: grep -qE '%token.*IDENT' ejercicio2/parser2.y
+
+      - name: "E2. Imprime numero correctamente"
+        id: e2_numero
+        continue-on-error: true
+        run: cd ejercicio2 && echo '42' | ./calc2 | grep -q 'Numero: 42'
+
+      - name: "E2. Imprime identificador correctamente"
+        id: e2_ident
+        continue-on-error: true
+        run: cd ejercicio2 && echo 'hola' | ./calc2 | grep -q 'Identificador: hola'
+
+      # ── Ejercicio 3: precedencia y asociatividad ─────────────────────
+
+      - name: "E3. parser3.y compila"
+        id: e3_compile
+        continue-on-error: true
+        run: cd ejercicio3 && bison -d parser3.y && flex scanner3.l && gcc lex.yy.c parser3.tab.c -o calc3 -lm
+
+      - name: "E3. Declara precedencia con %left"
+        id: e3_left
+        continue-on-error: true
+        run: grep -q '%left' ejercicio3/parser3.y
+
+      - name: "E3. Precedencia correcta: 2 + 3 * 4 = 14"
+        id: e3_prec
+        continue-on-error: true
+        run: cd ejercicio3 && printf '2 + 3 * 4\n' | ./calc3 | grep -q '= 14'
+
+      - name: "E3. Asociatividad izquierda: 10 - 2 - 3 = 5"
+        id: e3_assoc
+        continue-on-error: true
+        run: cd ejercicio3 && printf '10 - 2 - 3\n' | ./calc3 | grep -q '= 5'
+
+      - name: "E3. Menos unario: -5 + 10 = 5"
+        id: e3_unario
+        continue-on-error: true
+        run: cd ejercicio3 && printf -- '-5 + 10\n' | ./calc3 | grep -q '= 5'
+
+      # ── Ejercicio 4: recuperación de errores ────────────────────────
+
+      - name: "E4. parser4.y compila"
+        id: e4_compile
+        continue-on-error: true
+        run: cd ejercicio4 && bison -d parser4.y && flex scanner4.l && gcc lex.yy.c parser4.tab.c -o calc4
+
+      - name: "E4. Procesa expresion valida antes del error (= 7)"
+        id: e4_antes
+        continue-on-error: true
+        run: cd ejercicio4 && ./calc4 < entrada.txt | grep -q '= 7'
+
+      - name: "E4. Continua tras el error y procesa expresion valida (= 10)"
+        id: e4_despues
+        continue-on-error: true
+        run: cd ejercicio4 && ./calc4 < entrada.txt | grep -q '= 10'
+
+      # ── Preguntas de reflexión ───────────────────────────────────────
+
+      - name: "P1. Resolucion de conflictos por defecto en Bison"
+        id: p1
+        continue-on-error: true
+        run: grep -qE '^P1=SHIFT$' README.md
+
+      - name: "P2. Precedencia segun orden de declaraciones"
+        id: p2
+        continue-on-error: true
+        run: grep -qiE '^P2=SI$' README.md
+
+      - name: "P3. Efecto de yyerrok"
+        id: p3
+        continue-on-error: true
+        run: grep -qiE '^P3=SI$' README.md
+
+      # ── Puntaje final ────────────────────────────────────────────────
+      - name: Calcular puntaje
+        if: always()
+        env:
+          O_E1_COMPILE: ${{ steps.e1_compile.outcome }}
+          O_E1_SUMA:    ${{ steps.e1_suma.outcome }}
+          O_E1_RESTA:   ${{ steps.e1_resta.outcome }}
+          O_E1_MULT:    ${{ steps.e1_mult.outcome }}
+          O_E1_DIV:     ${{ steps.e1_div.outcome }}
+          O_E2_COMPILE: ${{ steps.e2_compile.outcome }}
+          O_E2_UNION:   ${{ steps.e2_union.outcome }}
+          O_E2_IDECL:   ${{ steps.e2_ident_decl.outcome }}
+          O_E2_NUMERO:  ${{ steps.e2_numero.outcome }}
+          O_E2_IDENT:   ${{ steps.e2_ident.outcome }}
+          O_E3_COMPILE: ${{ steps.e3_compile.outcome }}
+          O_E3_LEFT:    ${{ steps.e3_left.outcome }}
+          O_E3_PREC:    ${{ steps.e3_prec.outcome }}
+          O_E3_ASSOC:   ${{ steps.e3_assoc.outcome }}
+          O_E3_UNARIO:  ${{ steps.e3_unario.outcome }}
+          O_E4_COMPILE: ${{ steps.e4_compile.outcome }}
+          O_E4_ANTES:   ${{ steps.e4_antes.outcome }}
+          O_E4_DESPUES: ${{ steps.e4_despues.outcome }}
+          O_P1:         ${{ steps.p1.outcome }}
+          O_P2:         ${{ steps.p2.outcome }}
+          O_P3:         ${{ steps.p3.outcome }}
+        run: |
+          pts() { [ "$1" = "success" ] && echo "$2" || echo 0; }
+          row() { [ "$2" = "success" ] && echo "| $1 | ✅ | $3 / $3 |" || echo "| $1 | ❌ | 0 / $3 |"; }
+
+          SCORE=0
+          SCORE=$((SCORE + $(pts "$O_E1_COMPILE" 5)))
+          SCORE=$((SCORE + $(pts "$O_E1_SUMA"     5)))
+          SCORE=$((SCORE + $(pts "$O_E1_RESTA"    5)))
+          SCORE=$((SCORE + $(pts "$O_E1_MULT"     5)))
+          SCORE=$((SCORE + $(pts "$O_E1_DIV"      5)))
+          SCORE=$((SCORE + $(pts "$O_E2_COMPILE"  5)))
+          SCORE=$((SCORE + $(pts "$O_E2_UNION"    5)))
+          SCORE=$((SCORE + $(pts "$O_E2_IDECL"    5)))
+          SCORE=$((SCORE + $(pts "$O_E2_NUMERO"   5)))
+          SCORE=$((SCORE + $(pts "$O_E2_IDENT"    5)))
+          SCORE=$((SCORE + $(pts "$O_E3_COMPILE"  5)))
+          SCORE=$((SCORE + $(pts "$O_E3_LEFT"     5)))
+          SCORE=$((SCORE + $(pts "$O_E3_PREC"     5)))
+          SCORE=$((SCORE + $(pts "$O_E3_ASSOC"    5)))
+          SCORE=$((SCORE + $(pts "$O_E3_UNARIO"   5)))
+          SCORE=$((SCORE + $(pts "$O_E4_COMPILE"  5)))
+          SCORE=$((SCORE + $(pts "$O_E4_ANTES"    5)))
+          SCORE=$((SCORE + $(pts "$O_E4_DESPUES"  5)))
+          SCORE=$((SCORE + $(pts "$O_P1"          4)))
+          SCORE=$((SCORE + $(pts "$O_P2"          3)))
+          SCORE=$((SCORE + $(pts "$O_P3"          3)))
+
+          {
+            echo "## Puntaje: $SCORE / 100"
+            echo ""
+            echo "| Test | Resultado | Puntos |"
+            echo "|------|:---------:|-------:|"
+            row "E1. parser1.y compila"                          "$O_E1_COMPILE"  5
+            row "E1. Suma (3 + 4 = 7)"                          "$O_E1_SUMA"     5
+            row "E1. Resta (10 - 3 = 7)"                        "$O_E1_RESTA"    5
+            row "E1. Multiplicacion (2 * 5 = 10)"               "$O_E1_MULT"     5
+            row "E1. Division (8 / 2 = 4)"                      "$O_E1_DIV"      5
+            row "E2. parser2.y compila"                          "$O_E2_COMPILE"  5
+            row "E2. Usa %union con str_val"                     "$O_E2_UNION"    5
+            row "E2. Declara token IDENT"                        "$O_E2_IDECL"    5
+            row "E2. Imprime numero correctamente"               "$O_E2_NUMERO"   5
+            row "E2. Imprime identificador correctamente"        "$O_E2_IDENT"    5
+            row "E3. parser3.y compila"                          "$O_E3_COMPILE"  5
+            row "E3. Declara precedencia con %left"              "$O_E3_LEFT"     5
+            row "E3. Precedencia: 2 + 3 * 4 = 14"               "$O_E3_PREC"     5
+            row "E3. Asociatividad: 10 - 2 - 3 = 5"             "$O_E3_ASSOC"    5
+            row "E3. Menos unario: -5 + 10 = 5"                 "$O_E3_UNARIO"   5
+            row "E4. parser4.y compila"                          "$O_E4_COMPILE"  5
+            row "E4. Procesa expresion antes del error (= 7)"   "$O_E4_ANTES"    5
+            row "E4. Continua tras error (= 10)"                "$O_E4_DESPUES"  5
+            row "P1. Resolucion de conflictos por defecto"       "$O_P1"          4
+            row "P2. Precedencia segun orden de declaraciones"   "$O_P2"          3
+            row "P3. Efecto de yyerrok"                         "$O_P3"          3
+          } >> "$GITHUB_STEP_SUMMARY"
+
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo "  Puntaje: $SCORE / 100"
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+
+          if [ "$SCORE" -eq 100 ]; then
+            echo ""
+            echo "🎉 ¡Felicitaciones! Obtuviste 100/100. Laboratorio completado."
+          elif [ "$SCORE" -ge 60 ]; then
+            echo ""
+            echo "✅ ¡Aprobado! Obtuviste $SCORE/100."
+            echo "   Revisá los tests con ❌ en el resumen si querés mejorar tu puntaje."
+          else
+            echo ""
+            echo "❌ Puntaje insuficiente: $SCORE/100 (mínimo 60)."
+            echo "   Revisá los tests que no pasaron en el resumen de arriba,"
+            echo "   corregí los errores y volvé a hacer push."
+            exit 1
+          fi
+
+      # ── Reporte a GitHub Classroom ───────────────────────────────────
+      - name: Resultado autograding
+        if: always()
+        uses: education/autograding@v1
+        continue-on-error: true

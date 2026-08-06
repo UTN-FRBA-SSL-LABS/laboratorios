@@ -1,0 +1,151 @@
+{
+  "tests": [
+    {
+      "name": "E1. parser1.y compila",
+      "setup": "apt-get install -y bison flex gcc > /dev/null 2>&1 || true",
+      "run": "cd ejercicio1 && bison -d parser1.y && flex scanner1.l && gcc lex.yy.c parser1.tab.c -o calc1",
+      "input": "", "output": "", "comparison": "included",
+      "timeout": 30, "points": 5
+    },
+    {
+      "name": "E1. Suma (3 + 4 = 7)",
+      "setup": "apt-get install -y bison flex gcc > /dev/null 2>&1 || true",
+      "run": "cd ejercicio1 && bison -d parser1.y && flex scanner1.l && gcc lex.yy.c parser1.tab.c -o calc1 && echo '3 + 4' | ./calc1 | grep -q '= 7'",
+      "input": "", "output": "", "comparison": "included",
+      "timeout": 30, "points": 5
+    },
+    {
+      "name": "E1. Resta (10 - 3 = 7)",
+      "setup": "apt-get install -y bison flex gcc > /dev/null 2>&1 || true",
+      "run": "cd ejercicio1 && bison -d parser1.y && flex scanner1.l && gcc lex.yy.c parser1.tab.c -o calc1 && echo '10 - 3' | ./calc1 | grep -q '= 7'",
+      "input": "", "output": "", "comparison": "included",
+      "timeout": 30, "points": 5
+    },
+    {
+      "name": "E1. Multiplicacion (2 * 5 = 10)",
+      "setup": "apt-get install -y bison flex gcc > /dev/null 2>&1 || true",
+      "run": "cd ejercicio1 && bison -d parser1.y && flex scanner1.l && gcc lex.yy.c parser1.tab.c -o calc1 && echo '2 * 5' | ./calc1 | grep -q '= 10'",
+      "input": "", "output": "", "comparison": "included",
+      "timeout": 30, "points": 5
+    },
+    {
+      "name": "E1. Division (8 / 2 = 4)",
+      "setup": "apt-get install -y bison flex gcc > /dev/null 2>&1 || true",
+      "run": "cd ejercicio1 && bison -d parser1.y && flex scanner1.l && gcc lex.yy.c parser1.tab.c -o calc1 && echo '8 / 2' | ./calc1 | grep -q '= 4'",
+      "input": "", "output": "", "comparison": "included",
+      "timeout": 30, "points": 5
+    },
+    {
+      "name": "E2. parser2.y compila",
+      "setup": "apt-get install -y bison flex gcc > /dev/null 2>&1 || true",
+      "run": "cd ejercicio2 && bison -d parser2.y && flex scanner2.l && gcc lex.yy.c parser2.tab.c -o calc2",
+      "input": "", "output": "", "comparison": "included",
+      "timeout": 30, "points": 5
+    },
+    {
+      "name": "E2. Usa %union con str_val",
+      "setup": "",
+      "run": "grep -q 'str_val' ejercicio2/parser2.y",
+      "input": "", "output": "", "comparison": "included",
+      "timeout": 10, "points": 5
+    },
+    {
+      "name": "E2. Declara token IDENT",
+      "setup": "",
+      "run": "grep -qE '%token.*IDENT' ejercicio2/parser2.y",
+      "input": "", "output": "", "comparison": "included",
+      "timeout": 10, "points": 5
+    },
+    {
+      "name": "E2. Imprime numero correctamente",
+      "setup": "apt-get install -y bison flex gcc > /dev/null 2>&1 || true",
+      "run": "cd ejercicio2 && bison -d parser2.y && flex scanner2.l && gcc lex.yy.c parser2.tab.c -o calc2 && echo '42' | ./calc2 | grep -q 'Numero: 42'",
+      "input": "", "output": "", "comparison": "included",
+      "timeout": 30, "points": 5
+    },
+    {
+      "name": "E2. Imprime identificador correctamente",
+      "setup": "apt-get install -y bison flex gcc > /dev/null 2>&1 || true",
+      "run": "cd ejercicio2 && bison -d parser2.y && flex scanner2.l && gcc lex.yy.c parser2.tab.c -o calc2 && echo 'hola' | ./calc2 | grep -q 'Identificador: hola'",
+      "input": "", "output": "", "comparison": "included",
+      "timeout": 30, "points": 5
+    },
+    {
+      "name": "E3. parser3.y compila",
+      "setup": "apt-get install -y bison flex gcc > /dev/null 2>&1 || true",
+      "run": "cd ejercicio3 && bison -d parser3.y && flex scanner3.l && gcc lex.yy.c parser3.tab.c -o calc3 -lm",
+      "input": "", "output": "", "comparison": "included",
+      "timeout": 30, "points": 5
+    },
+    {
+      "name": "E3. Declara precedencia con %left",
+      "setup": "",
+      "run": "grep -q '%left' ejercicio3/parser3.y",
+      "input": "", "output": "", "comparison": "included",
+      "timeout": 10, "points": 5
+    },
+    {
+      "name": "E3. Precedencia: 2 + 3 * 4 = 14",
+      "setup": "apt-get install -y bison flex gcc > /dev/null 2>&1 || true",
+      "run": "cd ejercicio3 && bison -d parser3.y && flex scanner3.l && gcc lex.yy.c parser3.tab.c -o calc3 -lm && printf '2 + 3 * 4\\n' | ./calc3 | grep -q '= 14'",
+      "input": "", "output": "", "comparison": "included",
+      "timeout": 30, "points": 5
+    },
+    {
+      "name": "E3. Asociatividad: 10 - 2 - 3 = 5",
+      "setup": "apt-get install -y bison flex gcc > /dev/null 2>&1 || true",
+      "run": "cd ejercicio3 && bison -d parser3.y && flex scanner3.l && gcc lex.yy.c parser3.tab.c -o calc3 -lm && printf '10 - 2 - 3\\n' | ./calc3 | grep -q '= 5'",
+      "input": "", "output": "", "comparison": "included",
+      "timeout": 30, "points": 5
+    },
+    {
+      "name": "E3. Menos unario: -5 + 10 = 5",
+      "setup": "apt-get install -y bison flex gcc > /dev/null 2>&1 || true",
+      "run": "cd ejercicio3 && bison -d parser3.y && flex scanner3.l && gcc lex.yy.c parser3.tab.c -o calc3 -lm && printf -- '-5 + 10\\n' | ./calc3 | grep -q '= 5'",
+      "input": "", "output": "", "comparison": "included",
+      "timeout": 30, "points": 5
+    },
+    {
+      "name": "E4. parser4.y compila",
+      "setup": "apt-get install -y bison flex gcc > /dev/null 2>&1 || true",
+      "run": "cd ejercicio4 && bison -d parser4.y && flex scanner4.l && gcc lex.yy.c parser4.tab.c -o calc4",
+      "input": "", "output": "", "comparison": "included",
+      "timeout": 30, "points": 5
+    },
+    {
+      "name": "E4. Procesa expresion antes del error (= 7)",
+      "setup": "apt-get install -y bison flex gcc > /dev/null 2>&1 || true",
+      "run": "cd ejercicio4 && bison -d parser4.y && flex scanner4.l && gcc lex.yy.c parser4.tab.c -o calc4 && ./calc4 < entrada.txt | grep -q '= 7'",
+      "input": "", "output": "", "comparison": "included",
+      "timeout": 30, "points": 5
+    },
+    {
+      "name": "E4. Continua tras error (= 10)",
+      "setup": "apt-get install -y bison flex gcc > /dev/null 2>&1 || true",
+      "run": "cd ejercicio4 && bison -d parser4.y && flex scanner4.l && gcc lex.yy.c parser4.tab.c -o calc4 && ./calc4 < entrada.txt | grep -q '= 10'",
+      "input": "", "output": "", "comparison": "included",
+      "timeout": 30, "points": 5
+    },
+    {
+      "name": "P1. Resolucion de conflictos por defecto en Bison",
+      "setup": "",
+      "run": "grep -qE '^P1=SHIFT$' README.md",
+      "input": "", "output": "", "comparison": "included",
+      "timeout": 10, "points": 4
+    },
+    {
+      "name": "P2. Precedencia segun orden de declaraciones",
+      "setup": "",
+      "run": "grep -qiE '^P2=SI$' README.md",
+      "input": "", "output": "", "comparison": "included",
+      "timeout": 10, "points": 3
+    },
+    {
+      "name": "P3. Efecto de yyerrok",
+      "setup": "",
+      "run": "grep -qiE '^P3=SI$' README.md",
+      "input": "", "output": "", "comparison": "included",
+      "timeout": 10, "points": 3
+    }
+  ]
+}
