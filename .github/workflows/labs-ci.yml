@@ -1,4 +1,4 @@
-name: CI de laboratorios
+name: Grading de laboratorios
 
 on:
   push:
@@ -6,15 +6,13 @@ on:
       - "**"
     paths:
       - "labs/**"
+      - "scripts/grade-lab.sh"
+      - "Makefile"
       - ".github/workflows/labs-ci.yml"
-  pull_request:
-    paths:
-      - "labs/**"
-      - ".github/workflows/labs-ci.yml"
-  workflow_dispatch:
 
 permissions:
   contents: read
+  pull-requests: read
 
 jobs:
   detectar-cambios:
@@ -32,10 +30,8 @@ jobs:
       - name: Construir matriz de laboratorios
         id: detectar
         env:
-          EVENT_NAME: ${{ github.event_name }}
           BEFORE_SHA: ${{ github.event.before }}
-          BASE_SHA: ${{ github.event.pull_request.base.sha }}
-          HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          HEAD_SHA: ${{ github.sha }}
         shell: bash
         run: |
           set -euo pipefail
@@ -51,42 +47,37 @@ jobs:
           )
           CAMBIADOS=()
 
-          if [[ "$EVENT_NAME" == "workflow_dispatch" ]]; then
-            CAMBIADOS=("${TODOS[@]}")
-          else
-            if [[ "$EVENT_NAME" == "pull_request" ]]; then
-              INICIO="$BASE_SHA"
-              FIN="$HEAD_SHA"
-            else
-              INICIO="$BEFORE_SHA"
-              FIN="$HEAD_SHA"
-              if [[ -z "$INICIO" || "$INICIO" =~ ^0+$ ]]; then
-                INICIO="$(git hash-object -t tree /dev/null)"
-              fi
-            fi
+          INICIO="$BEFORE_SHA"
+          if [[ -z "$INICIO" || "$INICIO" =~ ^0+$ ]]; then
+            INICIO="$(git hash-object -t tree /dev/null)"
+          fi
 
-            mapfile -t ARCHIVOS < <(git diff --name-only "$INICIO" "$FIN")
+          ARCHIVOS=()
+          while IFS= read -r archivo; do
+            ARCHIVOS+=("$archivo")
+          done < <(git diff --name-only "$INICIO" "$HEAD_SHA")
 
-            ejecutar_todos=false
-            for archivo in "${ARCHIVOS[@]}"; do
-              if [[ "$archivo" == ".github/workflows/labs-ci.yml" ]]; then
+          ejecutar_todos=false
+          for archivo in "${ARCHIVOS[@]}"; do
+            case "$archivo" in
+              .github/workflows/labs-ci.yml|scripts/grade-lab.sh|Makefile)
                 ejecutar_todos=true
                 break
-              fi
-            done
+                ;;
+            esac
+          done
 
-            if [[ "$ejecutar_todos" == "true" ]]; then
-              CAMBIADOS=("${TODOS[@]}")
-            else
-              for lab in "${TODOS[@]}"; do
-                for archivo in "${ARCHIVOS[@]}"; do
-                  if [[ "$archivo" == "labs/$lab/"* ]]; then
-                    CAMBIADOS+=("$lab")
-                    break
-                  fi
-                done
+          if [[ "$ejecutar_todos" == "true" ]]; then
+            CAMBIADOS=("${TODOS[@]}")
+          else
+            for lab in "${TODOS[@]}"; do
+              for archivo in "${ARCHIVOS[@]}"; do
+                if [[ "$archivo" == "labs/$lab/"* ]]; then
+                  CAMBIADOS+=("$lab")
+                  break
+                fi
               done
-            fi
+            done
           fi
 
           if ((${#CAMBIADOS[@]} == 0)); then
@@ -101,7 +92,7 @@ jobs:
           echo "Laboratorios seleccionados: $JSON"
 
   verificar:
-    name: CI · ${{ matrix.lab }}
+    name: Grading · ${{ matrix.lab }}
     needs: detectar-cambios
     if: needs.detectar-cambios.outputs.hay_cambios == 'true'
     runs-on: ubuntu-latest
@@ -135,9 +126,80 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y "${paquetes[@]}"
 
-      - name: Ejecutar verificación
+      - name: Ejecutar grading
+        id: grading
+        continue-on-error: true
         env:
           GH_TOKEN: ${{ github.token }}
+          GRADE_DIR: ${{ runner.temp }}/calificaciones
           MIN_SCORE: "60"
-        working-directory: labs/${{ matrix.lab }}
-        run: make test
+        run: ./scripts/grade-lab.sh "${{ matrix.lab }}"
+
+      - name: Escribir nota en el resumen
+        if: always()
+        env:
+          ARCHIVO: ${{ runner.temp }}/calificaciones/${{ matrix.lab }}.json
+        shell: bash
+        run: |
+          set -euo pipefail
+          {
+            echo "## Calificación · ${{ matrix.lab }}"
+            echo ""
+            jq -r '"**Nota:** \(.score) / \(.max_score) — **Estado:** \(.status)"' "$ARCHIVO"
+            echo ""
+            echo "Commit: \`${{ github.sha }}\`"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Guardar nota del laboratorio
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: calificacion-${{ matrix.lab }}
+          path: |
+            ${{ runner.temp }}/calificaciones/${{ matrix.lab }}.json
+            ${{ runner.temp }}/calificaciones/${{ matrix.lab }}.log
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Marcar el grading como desaprobado
+        if: steps.grading.outcome == 'failure'
+        run: exit 1
+
+  consolidar-notas:
+    name: Consolidar notas del push
+    needs:
+      - detectar-cambios
+      - verificar
+    if: always() && needs.detectar-cambios.outputs.hay_cambios == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Descargar notas individuales
+        uses: actions/download-artifact@v4
+        with:
+          pattern: calificacion-*
+          path: calificaciones
+          merge-multiple: true
+
+      - name: Generar JSON y resumen consolidado
+        shell: bash
+        run: |
+          set -euo pipefail
+          jq -s 'sort_by(.lab)' calificaciones/*.json > calificaciones.json
+
+          {
+            echo "## Calificaciones del push"
+            echo ""
+            echo "| Laboratorio | Nota | Estado |"
+            echo "| --- | ---: | --- |"
+            for archivo in calificaciones/*.json; do
+              jq -r '"| \(.lab) | \(.score) / \(.max_score) | \(.status) |"' "$archivo"
+            done
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Guardar notas consolidadas
+        uses: actions/upload-artifact@v4
+        with:
+          name: calificaciones
+          path: calificaciones.json
+          if-no-files-found: error
+          retention-days: 30

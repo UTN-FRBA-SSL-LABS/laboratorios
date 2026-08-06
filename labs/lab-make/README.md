@@ -669,5 +669,5 @@ Para ver los resultados:
 
 1. Entrá a tu repositorio en GitHub
 2. Hacé click en la pestaña **Actions**
-3. Hacé click en la ejecución más reciente → job **CI · lab-make**
+3. Hacé click en la ejecución más reciente → job **Grading · lab-make**
 4. Al final del job vas a ver la tabla con el resultado de cada check y el puntaje total

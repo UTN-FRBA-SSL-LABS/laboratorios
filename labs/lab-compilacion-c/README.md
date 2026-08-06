@@ -98,7 +98,7 @@ git log --oneline
 Una vez que hiciste push, entrá a tu repositorio en GitHub:
 
 1. Hacé click en la pestaña **Actions**
-2. Hacé click en la ejecución más reciente → job **CI · lab-compilacion-c**
+2. Hacé click en la ejecución más reciente → job **Grading · lab-compilacion-c**
 3. Al final del job vas a ver la tabla con el resultado de cada check y el puntaje total
 
 Si algún check falla, corregí el problema, commiteá y volvé a pushear: el workflow se re-ejecuta solo.

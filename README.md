@@ -19,25 +19,28 @@ la integración continua del repositorio.
 ## Integración continua
 
 El repositorio tiene un único workflow en `.github/workflows/labs-ci.yml`.
-Ante un push o pull request, el workflow identifica las carpetas modificadas y
-ejecuta `make test` solamente para esos laboratorios. Si cambia el propio
-workflow, ejecuta los siete para validar la configuración completa.
+Ante cada push, identifica las carpetas modificadas y ejecuta solamente esos
+laboratorios. Si cambia la infraestructura de grading, ejecuta los siete para
+validar la configuración completa.
 
-Los verificadores consideran aprobado un puntaje de 60 o más. El mínimo puede
-ajustarse localmente con `MIN_SCORE`, por ejemplo:
+El mismo grading puede ejecutarse localmente desde la raíz, sin hacer push:
 
 ```bash
-cd labs/lab-flex
-MIN_SCORE=80 make test
+make grade LAB=lab-flex
 ```
+
+La salida legible y el JSON quedan en `calificaciones/`. Los verificadores
+consideran aprobado un puntaje de 60 o más; se puede ensayar otro mínimo con
+`MIN_SCORE=80 make grade LAB=lab-flex`.
 
 ## Forma de trabajo
 
 1. Clonar este repositorio una sola vez.
 2. Entrar en la carpeta del laboratorio asignado.
-3. Trabajar y ejecutar `make test` antes de hacer push.
+3. Trabajar y ejecutar `make test` desde el lab o `make grade LAB=<lab>` desde la raíz.
 4. Commitear únicamente los archivos correspondientes al laboratorio.
-5. Revisar el job `CI · <nombre-del-laboratorio>` en la pestaña **Actions**.
+5. Revisar el job `Grading · <nombre-del-laboratorio>` en la pestaña **Actions**.
 
 La procedencia de cada carpeta y las decisiones de migración están documentadas
-en [`docs/MIGRACION.md`](docs/MIGRACION.md).
+en [`docs/MIGRACION.md`](docs/MIGRACION.md). El formato y consumo automático de
+notas se describe en [`docs/CALIFICACIONES.md`](docs/CALIFICACIONES.md).

@@ -32,8 +32,8 @@ repositorios originales siguen disponibles en el historial del monorepo.
 
 ## Publicación y transición
 
-1. Crear un repositorio vacío en la organización, sugerido:
-   `UTN-FRBA-SSL-LABS/ssl-laboratorios`.
+1. Crear un repositorio vacío en la organización:
+   `UTN-FRBA-SSL-LABS/laboratorios`.
 2. Publicar la rama `main` de este monorepo.
 3. Probar un cambio aislado en cada carpeta y confirmar que solo se ejecute el
    laboratorio correspondiente.
