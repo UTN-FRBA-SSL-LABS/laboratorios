@@ -3,9 +3,8 @@
 ## Alcance
 
 Se consolidaron los siete repositorios base de la organización
-`UTN-FRBA-SSL-LABS`. No se importaron los repositorios personales creados por
-GitHub Classroom, porque contienen entregas de estudiantes y no son fuentes del
-material del curso.
+`UTN-FRBA-SSL-LABS`. No se importaron los antiguos repositorios personales de
+estudiantes, porque contienen entregas y no son fuentes del material del curso.
 
 | Carpeta nueva | Repositorio de origen | Commit importado |
 | --- | --- | --- |
@@ -37,12 +36,10 @@ repositorios originales siguen disponibles en el historial del monorepo.
 2. Publicar la rama `main` de este monorepo.
 3. Probar un cambio aislado en cada carpeta y confirmar que solo se ejecute el
    laboratorio correspondiente.
-4. Actualizar los assignments para usar el monorepo como repositorio inicial.
+4. Crear a partir de este repositorio las copias independientes para estudiantes.
 5. Mantener los repositorios base anteriores en modo solo lectura durante un
    período de transición; archivarlos recién después de validar el nuevo flujo.
 
-GitHub Classroom copia el repositorio completo para cada assignment. Si se
-quiere que cada estudiante vea solamente un laboratorio, la alternativa es
-mantener repositorios plantilla livianos que extraigan o sincronicen una carpeta
-del monorepo. Si se acepta que vean todo el material, el monorepo puede usarse
-directamente y el CI seguirá ejecutando solo las carpetas modificadas.
+Las copias de estudiantes son repositorios independientes que contienen el
+monorepo completo. El CI sigue ejecutando únicamente las carpetas modificadas y
+restaura la infraestructura docente desde el repositorio canónico.

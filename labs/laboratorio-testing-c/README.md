@@ -15,7 +15,7 @@ push. La verificación oficial se ejecuta cuando cambia
 de GitHub Actions.
 
 No modifiques `.github/`, `scripts/` ni `test_local.sh`: son infraestructura
-docente protegida y no forman parte de la entrega.
+docente y el workflow restaura automáticamente su versión oficial.
 
 ## Enunciado
 

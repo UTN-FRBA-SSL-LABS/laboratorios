@@ -87,7 +87,7 @@ json_escape() {
 }
 
 REPOSITORY="${GITHUB_REPOSITORY:-local}"
-COMMIT_SHA="${GITHUB_SHA:-$(git -C "$SUBMISSION_ROOT" rev-parse HEAD 2>/dev/null || echo unknown)}"
+COMMIT_SHA="${GRADE_COMMIT_SHA:-${GITHUB_SHA:-$(git -C "$SUBMISSION_ROOT" rev-parse HEAD 2>/dev/null || echo unknown)}}"
 REF_NAME="${GITHUB_REF_NAME:-$(git -C "$SUBMISSION_ROOT" branch --show-current 2>/dev/null || echo local)}"
 ACTOR="${GITHUB_ACTOR:-${USER:-local}}"
 RUN_ID="${GITHUB_RUN_ID:-}"

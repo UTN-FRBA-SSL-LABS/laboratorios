@@ -27,7 +27,11 @@ no existe un archivo de nota versionado que el estudiante pueda editar.
 ## Salida de GitHub Actions
 
 Ante cada push, el workflow detecta qué carpetas cambiaron y ejecuta solamente
-esos laboratorios. La nota queda disponible de tres maneras:
+esos laboratorios. Antes de calificar, repone desde el repositorio docente los
+archivos de infraestructura que hayan sido modificados. Un push que requiere
+restauración genera un commit correctivo y luego califica los cambios válidos
+del laboratorio sobre ese commit. Si el push solo modificó infraestructura, no
+hay ningún laboratorio que calificar. La nota queda disponible de tres maneras:
 
 1. En el **Job summary**, como tabla legible desde la ejecución del workflow.
 2. En el artefacto `calificacion-<laboratorio>`, con Markdown, JSON y log.

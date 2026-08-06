@@ -15,7 +15,7 @@ GitHub Actions sí los ejecuta. La nota oficial queda en el resumen y en los
 artefactos de la ejecución.
 
 No modifiques `.github/`, `scripts/` ni `test_local.sh`: son infraestructura
-docente protegida y no forman parte de la entrega.
+docente y el workflow restaura automáticamente su versión oficial.
 
 ## Antes de empezar
 
@@ -44,7 +44,7 @@ git --version
 
 ### Cloná el repositorio
 
-Una vez que aceptaste el assignment en GitHub Classroom, GitHub crea una copia del repositorio para vos. Copiá la URL de tu repo (botón verde **Code → HTTPS**) y ejecutá:
+Cuando recibas la URL de tu repositorio personal, copiala desde el botón verde **Code → HTTPS** y ejecutá:
 
 ```bash
 git clone <URL-de-tu-repo>

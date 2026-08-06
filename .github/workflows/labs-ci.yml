@@ -6,32 +6,85 @@ on:
       - "**"
     paths:
       - "labs/**"
-      - "scripts/grade-lab.sh"
+      - "scripts/**"
       - "Makefile"
-      - ".github/workflows/labs-ci.yml"
+      - "docs/GRADING.md"
+      - "docs/AUTORESTAURACION.md"
+      - ".github/**"
 
 permissions:
   contents: read
   pull-requests: read
 
 jobs:
+  restaurar-infraestructura:
+    name: Restaurar infraestructura docente
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+    outputs:
+      restaurado: ${{ steps.restaurar.outputs.restored }}
+      submission_sha: ${{ steps.entrega.outputs.sha }}
+    steps:
+      - name: Checkout de la entrega
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Descargar infraestructura oficial
+        uses: actions/checkout@v4
+        with:
+          repository: UTN-FRBA-SSL-LABS/laboratorios
+          ref: main
+          path: .grading
+          persist-credentials: false
+
+      - name: Comparar y restaurar archivos protegidos
+        id: restaurar
+        env:
+          CANONICAL_ROOT: ${{ github.workspace }}/.grading
+          GITHUB_ACTOR: ${{ github.actor }}
+          OWNER_ACTOR: santiagoferreiros
+          RESTORE_PUSH: "true"
+          SUBMISSION_ROOT: ${{ github.workspace }}
+        run: ./.grading/scripts/restore-protected-files.sh
+
+      - name: Informar restauración
+        if: steps.restaurar.outputs.restored == 'true'
+        shell: bash
+        run: |
+          {
+            echo "## Infraestructura restaurada"
+            echo ""
+            echo "El push modificó archivos docentes. Se repuso la versión oficial y se creó un commit correctivo."
+            echo "Los cambios válidos del laboratorio se calificarán sobre el commit corregido."
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Identificar commit a calificar
+        id: entrega
+        shell: bash
+        run: echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+
   detectar-cambios:
     name: Detectar laboratorios modificados
+    needs: restaurar-infraestructura
     runs-on: ubuntu-latest
     outputs:
       labs: ${{ steps.detectar.outputs.labs }}
       hay_cambios: ${{ steps.detectar.outputs.hay_cambios }}
+      submission_sha: ${{ steps.detectar.outputs.submission_sha }}
     steps:
       - name: Checkout del repositorio
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          ref: ${{ needs.restaurar-infraestructura.outputs.submission_sha }}
 
       - name: Construir matriz de laboratorios
         id: detectar
         env:
           BEFORE_SHA: ${{ github.event.before }}
-          HEAD_SHA: ${{ github.sha }}
+          HEAD_SHA: ${{ needs.restaurar-infraestructura.outputs.submission_sha }}
         shell: bash
         run: |
           set -euo pipefail
@@ -60,7 +113,7 @@ jobs:
           ejecutar_todos=false
           for archivo in "${ARCHIVOS[@]}"; do
             case "$archivo" in
-              .github/workflows/labs-ci.yml|scripts/grade-lab.sh|Makefile)
+              .github/*|.github/**/*|scripts/*|scripts/**/*|Makefile|docs/GRADING.md|docs/AUTORESTAURACION.md)
                 ejecutar_todos=true
                 break
                 ;;
@@ -89,6 +142,7 @@ jobs:
           fi
 
           echo "labs=$JSON" >> "$GITHUB_OUTPUT"
+          echo "submission_sha=$HEAD_SHA" >> "$GITHUB_OUTPUT"
           echo "Laboratorios seleccionados: $JSON"
 
   verificar:
@@ -104,6 +158,8 @@ jobs:
     steps:
       - name: Checkout del repositorio
         uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.detectar-cambios.outputs.submission_sha }}
 
       - name: Descargar grading oficial
         uses: actions/checkout@v4
@@ -141,6 +197,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           GRADE_DIR: ${{ runner.temp }}/calificaciones
           MIN_SCORE: "60"
+          GRADE_COMMIT_SHA: ${{ needs.detectar-cambios.outputs.submission_sha }}
           SUBMISSION_ROOT: ${{ github.workspace }}
         run: ./.grading/scripts/grade-lab.sh "${{ matrix.lab }}"
 
@@ -156,7 +213,7 @@ jobs:
             echo ""
             jq -r '"**Nota:** \(.score) / \(.max_score) — **Estado:** \(.status)"' "$ARCHIVO"
             echo ""
-            echo "Commit: \`${{ github.sha }}\`"
+            echo "Commit: \`${{ needs.detectar-cambios.outputs.submission_sha }}\`"
           } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Guardar nota del laboratorio

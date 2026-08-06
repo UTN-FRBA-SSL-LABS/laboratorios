@@ -14,7 +14,7 @@ push. La verificación oficial se ejecuta cuando cambia `labs/lab-make/`; la not
 queda en el resumen y en los artefactos de GitHub Actions.
 
 No modifiques `.github/`, `scripts/` ni `test_local.sh`: son infraestructura
-docente protegida y no forman parte de la entrega. Los `Makefile` de los
+docente y el workflow restaura automáticamente su versión oficial. Los `Makefile` de los
 ejercicios sí son parte de este laboratorio y deben completarse.
 
 ## Objetivo

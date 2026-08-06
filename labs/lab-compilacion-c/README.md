@@ -21,13 +21,13 @@ push. La verificación oficial se ejecuta cuando cambia
 GitHub Actions.
 
 No modifiques `.github/`, `scripts/` ni `test_local.sh`: son infraestructura
-docente protegida y no forman parte de la entrega.
+docente y el workflow restaura automáticamente su versión oficial.
 
 ---
 
 ## Antes de empezar: ¿Cómo funciona este laboratorio?
 
-Este laboratorio se entrega a través del repositorio de laboratorios. Al aceptar el assignment se te creó un repositorio personal en la organización de la materia con todos los archivos necesarios.
+Este laboratorio se entrega a través de un repositorio personal creado en la organización de la materia con todos los archivos necesarios.
 
 **El flujo es simple**: trabajás en `main`, verificás localmente con `make test`, y cuando está listo hacés push. GitHub ejecuta el workflow central de CI y podés ver los resultados en la pestaña **Actions** de tu repositorio.
 
