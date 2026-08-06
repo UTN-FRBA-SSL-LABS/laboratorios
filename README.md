@@ -1,8 +1,7 @@
 # Laboratorios de Sintaxis y Semántica de los Lenguajes
 
 Este repositorio reúne en un único lugar los laboratorios prácticos de SSL de
-UTN FRBA. Cada laboratorio conserva su contenido y su historial, pero comparte
-la integración continua del repositorio.
+UTN FRBA.
 
 ## Laboratorios
 
@@ -19,12 +18,8 @@ la integración continua del repositorio.
 ## Integración continua
 
 El repositorio tiene un único workflow en `.github/workflows/labs-ci.yml`.
-Ante cualquier push, primero compara la infraestructura docente con la versión
-canónica y restaura automáticamente cualquier diferencia. Después identifica
-las carpetas modificadas y ejecuta solamente esos laboratorios. Cuando el owner
-cambia infraestructura compartida de grading, ejecuta los siete para validar la
-configuración completa. Los pushes consecutivos sobre una misma rama cancelan
-la ejecución anterior para evitar carreras.
+Ante cualquier push, primero compara con la versión original y restaura automáticamente 
+cualquier diferencia. Después identifica las carpetas modificadas y ejecuta solamente esos laboratorios. 
 
 El mismo grading puede ejecutarse localmente desde la raíz, sin hacer push:
 
@@ -32,30 +27,9 @@ El mismo grading puede ejecutarse localmente desde la raíz, sin hacer push:
 make grade LAB=lab-flex
 ```
 
-La salida legible y el JSON quedan en `calificaciones/`. Los verificadores
-consideran aprobado un puntaje de 60 o más; se puede ensayar otro mínimo con
-`MIN_SCORE=80 make grade LAB=lab-flex`.
-
-La **nota oficial** se calcula con la versión de los tests mantenida en `main`
-del repositorio docente, no con una eventual copia modificada por el estudiante.
-Los paths declarados en `.grading-protected` se reemplazan con la versión
-oficial mediante un commit automático. Los README dentro de `labs/` quedan
-fuera de esa lista porque forman parte de la entrega. Los cambios válidos de la
-solución se califican en esa misma ejecución sobre el commit ya corregido.
-
-Cuando el owner cambia infraestructura compartida se ejecutan los siete labs
-como prueba de regresión.
-
 ## Forma de trabajo
 
-1. Clonar este repositorio una sola vez.
-2. Entrar en la carpeta del laboratorio asignado.
-3. Trabajar y ejecutar `make test` desde el lab o `make grade LAB=<lab>` desde la raíz.
-4. Commitear únicamente los archivos correspondientes al laboratorio.
-5. Revisar el job `Grading · <nombre-del-laboratorio>` en la pestaña **Actions**.
-
-La procedencia de cada carpeta y las decisiones de migración están documentadas
-en [`docs/MIGRACION.md`](docs/MIGRACION.md). El formato y consumo automático de
-notas se describe en [`docs/GRADING.md`](docs/GRADING.md).
-El alcance y las limitaciones de la restauración automática se describen en
-[`docs/AUTORESTAURACION.md`](docs/AUTORESTAURACION.md).
+1. Entrar en la carpeta del laboratorio asignado.
+2. Trabajar y ejecutar `make test` desde el lab o `make grade LAB=<lab>` desde la raíz.
+3. Commitear únicamente los archivos correspondientes al laboratorio.
+4. Revisar el job `Grading · <nombre-del-laboratorio>` en la pestaña **Actions**.
