@@ -19,11 +19,12 @@ la integración continua del repositorio.
 ## Integración continua
 
 El repositorio tiene un único workflow en `.github/workflows/labs-ci.yml`.
-Ante cada push, primero compara la infraestructura docente con la versión
-canónica y restaura automáticamente cualquier diferencia. Si no hubo que
-restaurar nada, identifica las carpetas modificadas y ejecuta solamente esos
-laboratorios. Cuando el owner cambia infraestructura de grading, ejecuta los
-siete para validar la configuración completa.
+Ante cualquier push, primero compara la infraestructura docente con la versión
+canónica y restaura automáticamente cualquier diferencia. Después identifica
+las carpetas modificadas y ejecuta solamente esos laboratorios. Cuando el owner
+cambia infraestructura compartida de grading, ejecuta los siete para validar la
+configuración completa. Los pushes consecutivos sobre una misma rama cancelan
+la ejecución anterior para evitar carreras.
 
 El mismo grading puede ejecutarse localmente desde la raíz, sin hacer push:
 
@@ -37,11 +38,10 @@ consideran aprobado un puntaje de 60 o más; se puede ensayar otro mínimo con
 
 La **nota oficial** se calcula con la versión de los tests mantenida en `main`
 del repositorio docente, no con una eventual copia modificada por el estudiante.
-Los cambios de estudiantes en `.github/`, `scripts/`, el `Makefile` raíz,
-`docs/GRADING.md`, `docs/AUTORESTAURACION.md` o `labs/*/test_local.sh` se
-reemplazan con la versión oficial mediante un commit automático. Los cambios
-válidos de la solución se califican en esa misma ejecución sobre el commit ya
-corregido.
+Los paths declarados en `.grading-protected` se reemplazan con la versión
+oficial mediante un commit automático. Los README dentro de `labs/` quedan
+fuera de esa lista porque forman parte de la entrega. Los cambios válidos de la
+solución se califican en esa misma ejecución sobre el commit ya corregido.
 
 Cuando el owner cambia infraestructura compartida se ejecutan los siete labs
 como prueba de regresión.

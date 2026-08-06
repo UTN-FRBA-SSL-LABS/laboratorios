@@ -8,13 +8,13 @@
  */
 
 /* ═══════════════════════════════════════════════════════════════════════════
- *  PARTE D — Escribir el test guiado (ver proceso_testing.md, Parte 8)
+ *  PARTE D — Escribir el test guiado (ver README.md, Parte 8)
  * ═══════════════════════════════════════════════════════════════════════════ */
 
 /* TODO: escribir test_compra_con_descuento() siguiendo la guia del .md */
 
 /* ═══════════════════════════════════════════════════════════════════════════
- *  PARTE E — Disenar un test propio (ver proceso_testing.md, Parte 9)
+ *  PARTE E — Disenar un test propio (ver README.md, Parte 9)
  * ═══════════════════════════════════════════════════════════════════════════ */
 
 /* TODO: escribir test_agregar_hasta_llenar() */

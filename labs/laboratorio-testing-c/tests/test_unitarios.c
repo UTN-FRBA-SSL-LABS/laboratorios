@@ -23,19 +23,19 @@ void test_agregar_uno(void) {
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
- *  PARTE A — Agregar el siguiente test (ver proceso_testing.md, Parte 4)
+ *  PARTE A — Agregar el siguiente test (ver README.md, Parte 4)
  * ═══════════════════════════════════════════════════════════════════════════ */
 
 /* TODO: pegar aqui la funcion test_total_precio_unitario() */
 
 /* ═══════════════════════════════════════════════════════════════════════════
- *  PARTE B — Completar los blancos (ver proceso_testing.md, Parte 5)
+ *  PARTE B — Completar los blancos (ver README.md, Parte 5)
  * ═══════════════════════════════════════════════════════════════════════════ */
 
 /* TODO: pegar y completar la funcion test_total_con_cantidad() */
 
 /* ═══════════════════════════════════════════════════════════════════════════
- *  PARTE C — Escribir un test propio (ver proceso_testing.md, Parte 7)
+ *  PARTE C — Escribir un test propio (ver README.md, Parte 7)
  * ═══════════════════════════════════════════════════════════════════════════ */
 
 /* TODO: escribir test_carrito_lleno() */

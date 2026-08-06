@@ -6,17 +6,28 @@ workflow compara los archivos docentes con
 
 ## Archivos restaurados
 
-- todo `.github/`, incluido el workflow;
-- todo `scripts/`, incluidos el grading y esta restauración;
-- el `Makefile` raíz;
-- `docs/GRADING.md` y este documento;
-- todos los `labs/*/test_local.sh`.
+El manifiesto `.grading-protected` es la única fuente de verdad. Actualmente
+incluye:
 
-Si encuentra una diferencia, repone la versión canónica, crea el commit
-`chore: restaurar infraestructura docente [skip ci]` y lo publica en la misma
-rama. La ejecución informa la corrección en su resumen y continúa sobre el
-commit restaurado: los cambios válidos del laboratorio se califican normalmente.
-Si el push solo alteró infraestructura, no queda ningún laboratorio por evaluar.
+- todo `.github/` y `scripts/`;
+- el `Makefile`, `README.md` y `.gitignore` de la raíz;
+- `.grading-protected` y `.grading-version`;
+- `docs/GRADING.md` y este documento;
+- todos los `labs/*/.gitignore` y `labs/*/test_local.sh`.
+
+Los README ubicados dentro de `labs/` no se sincronizan: forman parte de la
+entrega y pueden contener respuestas del estudiante.
+
+`.grading-version` identifica la versión funcional de la infraestructura. Debe
+incrementarse cuando un cambio sea incompatible con copias anteriores; el SHA
+canónico sigue siendo el identificador exacto de cada ejecución.
+
+Si encuentra una diferencia, repone la versión canónica, crea un commit con el
+formato `chore: restaurar infraestructura docente (<sha>) [skip ci]` y lo
+publica en la misma rama. La ejecución informa la corrección y el commit
+canónico en su resumen, y continúa sobre el commit restaurado: los cambios
+válidos del laboratorio se califican normalmente. Si el push solo alteró
+infraestructura, no queda ningún laboratorio por evaluar.
 
 Los fuentes, respuestas, enunciados y Makefiles internos de los ejercicios
 siguen siendo editables. `@santiagoferreiros` queda exceptuado para poder

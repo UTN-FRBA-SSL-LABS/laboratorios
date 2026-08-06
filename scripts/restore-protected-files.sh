@@ -5,10 +5,15 @@ SUBMISSION_ROOT="${SUBMISSION_ROOT:-$PWD}"
 CANONICAL_ROOT="${CANONICAL_ROOT:-$SUBMISSION_ROOT/.grading}"
 OWNER_ACTOR="${OWNER_ACTOR:-santiagoferreiros}"
 RESTORE_PUSH="${RESTORE_PUSH:-false}"
+MANIFEST_NAME=".grading-protected"
+CANONICAL_SHA="$(git -C "$CANONICAL_ROOT" rev-parse HEAD 2>/dev/null || echo unknown)"
+GRADING_VERSION="$(tr -d '\r\n' < "$CANONICAL_ROOT/.grading-version" 2>/dev/null || echo unknown)"
 
 write_output() {
   if [[ -n "${GITHUB_OUTPUT:-}" ]]; then
     echo "restored=$1" >> "$GITHUB_OUTPUT"
+    echo "canonical_sha=$CANONICAL_SHA" >> "$GITHUB_OUTPUT"
+    echo "grading_version=$GRADING_VERSION" >> "$GITHUB_OUTPUT"
   fi
 }
 
@@ -23,35 +28,52 @@ if [[ ! -d "$SUBMISSION_ROOT/.git" ]]; then
   exit 66
 fi
 
-for path in .github scripts Makefile docs/GRADING.md docs/AUTORESTAURACION.md; do
-  if [[ ! -e "$CANONICAL_ROOT/$path" ]]; then
-    echo "Falta el archivo o directorio canónico: $path" >&2
+if [[ ! -f "$CANONICAL_ROOT/$MANIFEST_NAME" ]]; then
+  echo "Falta el manifiesto canónico: $MANIFEST_NAME" >&2
+  exit 66
+fi
+
+protected_paths=()
+while IFS= read -r entry || [[ -n "$entry" ]]; do
+  if [[ -z "$entry" || "$entry" == \#* ]]; then
+    continue
+  fi
+  if [[ "$entry" == /* || "$entry" == *".."* ]]; then
+    echo "Entrada insegura en $MANIFEST_NAME: $entry" >&2
     exit 66
   fi
-done
 
-for lab in "$CANONICAL_ROOT"/labs/*; do
-  if [[ ! -f "$lab/test_local.sh" ]]; then
-    echo "Falta el test canónico: ${lab#"$CANONICAL_ROOT/"}/test_local.sh" >&2
+  if [[ "$entry" == */ ]]; then
+    relative="${entry%/}"
+    source="$CANONICAL_ROOT/$relative"
+    destination="$SUBMISSION_ROOT/$relative"
+    if [[ ! -d "$source" ]]; then
+      echo "Falta el directorio canónico: $relative" >&2
+      exit 66
+    fi
+    mkdir -p "$destination"
+    rsync -a --delete "$source/" "$destination/"
+    protected_paths+=("$relative")
+    continue
+  fi
+
+  matches=()
+  while IFS= read -r match; do
+    matches+=("$match")
+  done < <(compgen -G "$CANONICAL_ROOT/$entry" || true)
+  if ((${#matches[@]} == 0)); then
+    echo "La entrada del manifiesto no encontró archivos: $entry" >&2
     exit 66
   fi
-done
 
-mkdir -p "$SUBMISSION_ROOT/.github" "$SUBMISSION_ROOT/scripts" "$SUBMISSION_ROOT/docs"
-rsync -a --delete "$CANONICAL_ROOT/.github/" "$SUBMISSION_ROOT/.github/"
-rsync -a --delete "$CANONICAL_ROOT/scripts/" "$SUBMISSION_ROOT/scripts/"
-install -m 0644 "$CANONICAL_ROOT/Makefile" "$SUBMISSION_ROOT/Makefile"
-install -m 0644 "$CANONICAL_ROOT/docs/GRADING.md" "$SUBMISSION_ROOT/docs/GRADING.md"
-install -m 0644 "$CANONICAL_ROOT/docs/AUTORESTAURACION.md" "$SUBMISSION_ROOT/docs/AUTORESTAURACION.md"
-
-protected_paths=(.github scripts Makefile docs/GRADING.md docs/AUTORESTAURACION.md)
-for canonical_lab in "$CANONICAL_ROOT"/labs/*; do
-  lab="$(basename "$canonical_lab")"
-  destination="$SUBMISSION_ROOT/labs/$lab/test_local.sh"
-  mkdir -p "$(dirname "$destination")"
-  rsync -a "$canonical_lab/test_local.sh" "$destination"
-  protected_paths+=("labs/$lab/test_local.sh")
-done
+  for source in "${matches[@]}"; do
+    relative="${source#"$CANONICAL_ROOT/"}"
+    destination="$SUBMISSION_ROOT/$relative"
+    mkdir -p "$(dirname "$destination")"
+    rsync -a "$source" "$destination"
+    protected_paths+=("$relative")
+  done
+done < "$CANONICAL_ROOT/$MANIFEST_NAME"
 
 git -C "$SUBMISSION_ROOT" add -A -- "${protected_paths[@]}"
 
@@ -72,5 +94,5 @@ fi
 
 git -C "$SUBMISSION_ROOT" config user.name "github-actions[bot]"
 git -C "$SUBMISSION_ROOT" config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-git -C "$SUBMISSION_ROOT" commit -m "chore: restaurar infraestructura docente [skip ci]"
+git -C "$SUBMISSION_ROOT" commit -m "chore: restaurar infraestructura docente (${CANONICAL_SHA:0:12}) [skip ci]"
 git -C "$SUBMISSION_ROOT" push origin "HEAD:${GITHUB_REF_NAME}"

@@ -62,28 +62,28 @@ check 8 "salidas/test_integracion.txt existe" 3 \
 
 # ── Respuestas cerradas ────────────────────────────
 check R1 "TOTAL_PROGRAMA=2050" 5 \
-  bash -c "grep -qE '^TOTAL_PROGRAMA=2050$' proceso_testing.md"
+  bash -c "grep -qE '^TOTAL_PROGRAMA=2050$' README.md"
 
 check R2 "TEST_PRECIO_UNITARIO_PASA=SI" 5 \
-  bash -c "grep -qiE '^TEST_PRECIO_UNITARIO_PASA=SI$' proceso_testing.md"
+  bash -c "grep -qiE '^TEST_PRECIO_UNITARIO_PASA=SI$' README.md"
 
 check R3 "TEST_TOTAL_CANTIDAD_PASA=NO" 5 \
-  bash -c "grep -qiE '^TEST_TOTAL_CANTIDAD_PASA=NO$' proceso_testing.md"
+  bash -c "grep -qiE '^TEST_TOTAL_CANTIDAD_PASA=NO$' README.md"
 
 check R4 "TESTS_UNITARIOS_PASAN=SI" 5 \
-  bash -c "grep -qiE '^TESTS_UNITARIOS_PASAN=SI$' proceso_testing.md"
+  bash -c "grep -qiE '^TESTS_UNITARIOS_PASAN=SI$' README.md"
 
 check R5 "TEST_INTEGRACION_PASA=SI" 5 \
-  bash -c "grep -qiE '^TEST_INTEGRACION_PASA=SI$' proceso_testing.md"
+  bash -c "grep -qiE '^TEST_INTEGRACION_PASA=SI$' README.md"
 
 check R6 "BUG_EN_FUNCION_1=carrito_total" 7 \
-  bash -c "grep -qiE '^BUG_EN_FUNCION_1=carrito_total$' proceso_testing.md"
+  bash -c "grep -qiE '^BUG_EN_FUNCION_1=carrito_total$' README.md"
 
 check R7 "BUG_EN_FUNCION_2=carrito_agregar" 7 \
-  bash -c "grep -qiE '^BUG_EN_FUNCION_2=carrito_agregar$' proceso_testing.md"
+  bash -c "grep -qiE '^BUG_EN_FUNCION_2=carrito_agregar$' README.md"
 
 check R8 "COBERTURA_COMPLETA tiene valor (SI o NO)" 5 \
-  bash -c "grep -qiE '^COBERTURA_COMPLETA=(SI|NO)$' proceso_testing.md"
+  bash -c "grep -qiE '^COBERTURA_COMPLETA=(SI|NO)$' README.md"
 
 # ── Resumen ────────────────────────────────────────
 echo ""

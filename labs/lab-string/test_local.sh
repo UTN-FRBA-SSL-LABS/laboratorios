@@ -98,8 +98,8 @@ echo "  — Checks informativos (sin puntaje) —"
 check F1 "README.md análisis completado" 0 \
   bash -c "! grep -q '(respuesta)' README.md"
 
-check F2 "String.md completado" 0 \
-  bash -c "test -s String.md && ! grep -q 'completar' String.md"
+check F2 "README.md incluye la especificación de String" 0 \
+  bash -c "grep -q '^### Especificación matemática$' README.md && grep -q 'Contains : String' README.md"
 
 # ── Resumen ────────────────────────────────────────
 echo ""

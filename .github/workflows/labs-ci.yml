@@ -4,13 +4,10 @@ on:
   push:
     branches:
       - "**"
-    paths:
-      - "labs/**"
-      - "scripts/**"
-      - "Makefile"
-      - "docs/GRADING.md"
-      - "docs/AUTORESTAURACION.md"
-      - ".github/**"
+
+concurrency:
+  group: grading-${{ github.repository }}-${{ github.ref }}
+  cancel-in-progress: true
 
 permissions:
   contents: read
@@ -24,6 +21,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       restaurado: ${{ steps.restaurar.outputs.restored }}
+      canonical_sha: ${{ steps.restaurar.outputs.canonical_sha }}
       submission_sha: ${{ steps.entrega.outputs.sha }}
     steps:
       - name: Checkout de la entrega
@@ -58,6 +56,7 @@ jobs:
             echo ""
             echo "El push modificó archivos docentes. Se repuso la versión oficial y se creó un commit correctivo."
             echo "Los cambios válidos del laboratorio se calificarán sobre el commit corregido."
+            echo "Versión canónica: \`${{ steps.restaurar.outputs.canonical_sha }}\`."
           } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Identificar commit a calificar
@@ -113,7 +112,7 @@ jobs:
           ejecutar_todos=false
           for archivo in "${ARCHIVOS[@]}"; do
             case "$archivo" in
-              .github/*|.github/**/*|scripts/*|scripts/**/*|Makefile|docs/GRADING.md|docs/AUTORESTAURACION.md)
+              .github/*|.github/**/*|scripts/*|scripts/**/*|Makefile|.grading-protected|.grading-version|docs/GRADING.md|docs/AUTORESTAURACION.md)
                 ejecutar_todos=true
                 break
                 ;;
