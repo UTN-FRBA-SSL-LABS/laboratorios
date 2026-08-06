@@ -1,0 +1,241 @@
+name: Autograding
+
+on:
+  push:
+    branches: [ "**" ]
+    paths:
+      - "**/*.l"
+      - "README.md"
+  workflow_dispatch:
+
+permissions:
+  checks: write
+  actions: read
+  contents: read
+
+jobs:
+  autograding:
+    name: Autograding
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout del repositorio
+        uses: actions/checkout@v4
+
+      - name: Instalar Flex y GCC
+        run: sudo apt-get install -y flex gcc
+
+      # ── Ejercicio 1: yytext y comodín ──────────────────────────────
+
+      - name: "E1. scanner1.l compila"
+        id: e1_compile
+        continue-on-error: true
+        run: cd ejercicio1 && flex scanner1.l && gcc lex.yy.c -o scanner1
+
+      - name: "E1. Reconoce constante decimal"
+        id: e1_decimal
+        continue-on-error: true
+        run: cd ejercicio1 && ./scanner1 < entrada.txt | grep -q 'constante decimal'
+
+      - name: "E1. Reconoce constante octal"
+        id: e1_octal
+        continue-on-error: true
+        run: cd ejercicio1 && ./scanner1 < entrada.txt | grep -q 'constante octal'
+
+      - name: "E1. Reconoce identificador"
+        id: e1_ident
+        continue-on-error: true
+        run: cd ejercicio1 && ./scanner1 < entrada.txt | grep -q 'identificador'
+
+      - name: "E1. Regla comodin reconoce caracter no reconocido"
+        id: e1_comodin
+        continue-on-error: true
+        run: cd ejercicio1 && ./scanner1 < entrada.txt | grep -q 'caracter no reconocido'
+
+      # ── Ejercicio 2: Definiciones ERX y yyleng ─────────────────────
+
+      - name: "E2. scanner2.l compila"
+        id: e2_compile
+        continue-on-error: true
+        run: cd ejercicio2 && flex scanner2.l && gcc lex.yy.c -o scanner2
+
+      - name: "E2. Usa definiciones ERX en las reglas"
+        id: e2_erx
+        continue-on-error: true
+        run: grep -qE '\{[a-z]' ejercicio2/scanner2.l
+
+      - name: "E2. Imprime longitud con yyleng"
+        id: e2_yyleng
+        continue-on-error: true
+        run: cd ejercicio2 && ./scanner2 < entrada.txt | grep -qi 'longitud'
+
+      - name: "E2. Longitud correcta para 'abc' (3 caracteres)"
+        id: e2_len3
+        continue-on-error: true
+        run: cd ejercicio2 && ./scanner2 < entrada.txt | grep -q 'longitud 3'
+
+      - name: "E2. Longitud correcta para 'miVariable' (10 caracteres)"
+        id: e2_len10
+        continue-on-error: true
+        run: cd ejercicio2 && ./scanner2 < entrada.txt | grep -q 'longitud 10'
+
+      # ── Ejercicio 3: Variables globales y funciones ─────────────────
+
+      - name: "E3. scanner3.l compila con misfunciones.c"
+        id: e3_compile
+        continue-on-error: true
+        run: cd ejercicio3 && flex scanner3.l && gcc lex.yy.c misfunciones.c -o scanner3
+
+      - name: "E3. Reconoce e imprime identificadores"
+        id: e3_ident
+        continue-on-error: true
+        run: |
+          cd ejercicio3 && ./scanner3 < entrada.txt | grep -q 'identificador: abc'
+
+      - name: "E3. Contador de tokens correcto (4 tokens)"
+        id: e3_total
+        continue-on-error: true
+        run: |
+          cd ejercicio3 && ./scanner3 < entrada.txt | grep -q 'Tokens totales: 4'
+
+      - name: "E3. Llama a duplicar() correctamente (El doble es: 8)"
+        id: e3_duplicar
+        continue-on-error: true
+        run: |
+          cd ejercicio3 && ./scanner3 < entrada.txt | grep -q 'El doble es: 8'
+
+      # ── Ejercicio 4: Reconocedor de tokens ─────────────────────────
+
+      - name: "E4. scanner4.l compila"
+        id: e4_compile
+        continue-on-error: true
+        run: cd ejercicio4 && flex scanner4.l && gcc lex.yy.c -o scanner4
+
+      - name: "E4. Retorna y muestra token NUMBER"
+        id: e4_number
+        continue-on-error: true
+        run: cd ejercicio4 && echo '42' | ./scanner4 | grep -q 'TOKEN NUMBER'
+
+      - name: "E4. Retorna y muestra token IDENT"
+        id: e4_ident
+        continue-on-error: true
+        run: cd ejercicio4 && echo 'miVar' | ./scanner4 | grep -q 'TOKEN IDENT'
+
+      # ── Preguntas de reflexión ──────────────────────────────────────
+
+      - name: "P1. Regla por defecto de Flex"
+        id: p1
+        continue-on-error: true
+        run: grep -qE '^P1=ECHO$' README.md
+
+      - name: "P2. Desempate entre reglas de igual longitud"
+        id: p2
+        continue-on-error: true
+        run: grep -qE '^P2=LA_PRIMERA$' README.md
+
+      - name: "P3. Variable yyleng"
+        id: p3
+        continue-on-error: true
+        run: grep -qiE '^P3=SI$' README.md
+
+      # ── Puntaje final ───────────────────────────────────────────────
+      - name: Calcular puntaje
+        if: always()
+        env:
+          O_E1_COMPILE: ${{ steps.e1_compile.outcome }}
+          O_E1_DECIMAL: ${{ steps.e1_decimal.outcome }}
+          O_E1_OCTAL:   ${{ steps.e1_octal.outcome }}
+          O_E1_IDENT:   ${{ steps.e1_ident.outcome }}
+          O_E1_COMODIN: ${{ steps.e1_comodin.outcome }}
+          O_E2_COMPILE: ${{ steps.e2_compile.outcome }}
+          O_E2_ERX:     ${{ steps.e2_erx.outcome }}
+          O_E2_YYLENG:  ${{ steps.e2_yyleng.outcome }}
+          O_E2_LEN3:    ${{ steps.e2_len3.outcome }}
+          O_E2_LEN10:   ${{ steps.e2_len10.outcome }}
+          O_E3_COMPILE: ${{ steps.e3_compile.outcome }}
+          O_E3_IDENT:   ${{ steps.e3_ident.outcome }}
+          O_E3_TOTAL:   ${{ steps.e3_total.outcome }}
+          O_E3_DUPL:    ${{ steps.e3_duplicar.outcome }}
+          O_E4_COMPILE: ${{ steps.e4_compile.outcome }}
+          O_E4_NUMBER:  ${{ steps.e4_number.outcome }}
+          O_E4_IDENT:   ${{ steps.e4_ident.outcome }}
+          O_P1:         ${{ steps.p1.outcome }}
+          O_P2:         ${{ steps.p2.outcome }}
+          O_P3:         ${{ steps.p3.outcome }}
+        run: |
+          pts() { [ "$1" = "success" ] && echo "$2" || echo 0; }
+          row() { [ "$2" = "success" ] && echo "| $1 | ✅ | $3 / $3 |" || echo "| $1 | ❌ | 0 / $3 |"; }
+
+          SCORE=0
+          SCORE=$((SCORE + $(pts "$O_E1_COMPILE" 5)))
+          SCORE=$((SCORE + $(pts "$O_E1_DECIMAL"  5)))
+          SCORE=$((SCORE + $(pts "$O_E1_OCTAL"    5)))
+          SCORE=$((SCORE + $(pts "$O_E1_IDENT"    5)))
+          SCORE=$((SCORE + $(pts "$O_E1_COMODIN"  5)))
+          SCORE=$((SCORE + $(pts "$O_E2_COMPILE"  5)))
+          SCORE=$((SCORE + $(pts "$O_E2_ERX"      5)))
+          SCORE=$((SCORE + $(pts "$O_E2_YYLENG"   5)))
+          SCORE=$((SCORE + $(pts "$O_E2_LEN3"     5)))
+          SCORE=$((SCORE + $(pts "$O_E2_LEN10"    5)))
+          SCORE=$((SCORE + $(pts "$O_E3_COMPILE"  5)))
+          SCORE=$((SCORE + $(pts "$O_E3_IDENT"    5)))
+          SCORE=$((SCORE + $(pts "$O_E3_TOTAL"   10)))
+          SCORE=$((SCORE + $(pts "$O_E3_DUPL"     5)))
+          SCORE=$((SCORE + $(pts "$O_E4_COMPILE"  5)))
+          SCORE=$((SCORE + $(pts "$O_E4_NUMBER"   5)))
+          SCORE=$((SCORE + $(pts "$O_E4_IDENT"    5)))
+          SCORE=$((SCORE + $(pts "$O_P1"          4)))
+          SCORE=$((SCORE + $(pts "$O_P2"          3)))
+          SCORE=$((SCORE + $(pts "$O_P3"          3)))
+
+          {
+            echo "## Puntaje: $SCORE / 100"
+            echo ""
+            echo "| Test | Resultado | Puntos |"
+            echo "|------|:---------:|-------:|"
+            row "E1. scanner1.l compila"                        "$O_E1_COMPILE"  5
+            row "E1. Reconoce constante decimal"                "$O_E1_DECIMAL"  5
+            row "E1. Reconoce constante octal"                  "$O_E1_OCTAL"    5
+            row "E1. Reconoce identificador"                    "$O_E1_IDENT"    5
+            row "E1. Regla comodin"                             "$O_E1_COMODIN"  5
+            row "E2. scanner2.l compila"                        "$O_E2_COMPILE"  5
+            row "E2. Usa definiciones ERX"                      "$O_E2_ERX"      5
+            row "E2. Imprime longitud con yyleng"               "$O_E2_YYLENG"   5
+            row "E2. Longitud correcta (abc = 3)"               "$O_E2_LEN3"     5
+            row "E2. Longitud correcta (miVariable = 10)"       "$O_E2_LEN10"    5
+            row "E3. scanner3.l compila"                        "$O_E3_COMPILE"  5
+            row "E3. Reconoce identificadores"                  "$O_E3_IDENT"    5
+            row "E3. Contador de tokens correcto"               "$O_E3_TOTAL"   10
+            row "E3. Llama a duplicar() correctamente"          "$O_E3_DUPL"     5
+            row "E4. scanner4.l compila"                        "$O_E4_COMPILE"  5
+            row "E4. Retorna token NUMBER"                      "$O_E4_NUMBER"   5
+            row "E4. Retorna token IDENT"                       "$O_E4_IDENT"    5
+            row "P1. Regla por defecto de Flex"                 "$O_P1"          4
+            row "P2. Desempate entre reglas"                    "$O_P2"          3
+            row "P3. Variable yyleng"                           "$O_P3"          3
+          } >> "$GITHUB_STEP_SUMMARY"
+
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo "  Puntaje: $SCORE / 100"
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+
+          if [ "$SCORE" -eq 100 ]; then
+            echo ""
+            echo "🎉 ¡Felicitaciones! Obtuviste 100/100. Laboratorio completado."
+          elif [ "$SCORE" -ge 60 ]; then
+            echo ""
+            echo "✅ ¡Aprobado! Obtuviste $SCORE/100."
+            echo "   Revisá los tests con ❌ en el resumen si querés mejorar tu puntaje."
+          else
+            echo ""
+            echo "❌ Puntaje insuficiente: $SCORE/100 (mínimo 60)."
+            echo "   Revisá los tests que no pasaron en el resumen de arriba,"
+            echo "   corregí los errores y volvé a hacer push."
+            exit 1
+          fi
+
+      # ── Reporte a GitHub Classroom ──────────────────────────────────
+      - name: Resultado autograding
+        if: always()
+        uses: education/autograding@v1
+        continue-on-error: true

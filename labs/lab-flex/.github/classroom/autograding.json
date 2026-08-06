@@ -1,0 +1,144 @@
+{
+  "tests": [
+     {
+      "name": "E1. scanner1.l compila",
+      "setup": "apt-get install -y flex gcc > /dev/null 2>&1 || true",
+      "run": "cd ejercicio1 && flex scanner1.l && gcc lex.yy.c -o scanner1",
+      "input": "", "output": "", "comparison": "included",
+      "timeout": 30, "points": 5
+    },
+    {
+      "name": "E1. Reconoce constante decimal",
+      "setup": "apt-get install -y flex gcc > /dev/null 2>&1 || true",
+      "run": "cd ejercicio1 && flex scanner1.l && gcc lex.yy.c -o scanner1 && ./scanner1 < entrada.txt | grep -q 'constante decimal'",
+      "input": "", "output": "", "comparison": "included",
+      "timeout": 30, "points": 5
+    },
+    {
+      "name": "E1. Reconoce constante octal",
+      "setup": "apt-get install -y flex gcc > /dev/null 2>&1 || true",
+      "run": "cd ejercicio1 && flex scanner1.l && gcc lex.yy.c -o scanner1 && ./scanner1 < entrada.txt | grep -q 'constante octal'",
+      "input": "", "output": "", "comparison": "included",
+      "timeout": 30, "points": 5
+    },
+    {
+      "name": "E1. Reconoce identificador",
+      "setup": "apt-get install -y flex gcc > /dev/null 2>&1 || true",
+      "run": "cd ejercicio1 && flex scanner1.l && gcc lex.yy.c -o scanner1 && ./scanner1 < entrada.txt | grep -q 'identificador'",
+      "input": "", "output": "", "comparison": "included",
+      "timeout": 30, "points": 5
+    },
+    {
+      "name": "E1. Regla comodin reconoce caracter no reconocido",
+      "setup": "apt-get install -y flex gcc > /dev/null 2>&1 || true",
+      "run": "cd ejercicio1 && flex scanner1.l && gcc lex.yy.c -o scanner1 && ./scanner1 < entrada.txt | grep -q 'caracter no reconocido'",
+      "input": "", "output": "", "comparison": "included",
+      "timeout": 30, "points": 5
+    },
+    {
+      "name": "E2. scanner2.l compila",
+      "setup": "apt-get install -y flex gcc > /dev/null 2>&1 || true",
+      "run": "cd ejercicio2 && flex scanner2.l && gcc lex.yy.c -o scanner2",
+      "input": "", "output": "", "comparison": "included",
+      "timeout": 30, "points": 5
+    },
+    {
+      "name": "E2. Usa definiciones ERX en las reglas",
+      "setup": "",
+      "run": "grep -qE '\\{[a-z]' ejercicio2/scanner2.l",
+      "input": "", "output": "", "comparison": "included",
+      "timeout": 10, "points": 5
+    },
+    {
+      "name": "E2. Imprime longitud con yyleng",
+      "setup": "apt-get install -y flex gcc > /dev/null 2>&1 || true",
+      "run": "cd ejercicio2 && flex scanner2.l && gcc lex.yy.c -o scanner2 && ./scanner2 < entrada.txt | grep -qi 'longitud'",
+      "input": "", "output": "", "comparison": "included",
+      "timeout": 30, "points": 5
+    },
+    {
+      "name": "E2. Longitud correcta para 'abc' (3 caracteres)",
+      "setup": "apt-get install -y flex gcc > /dev/null 2>&1 || true",
+      "run": "cd ejercicio2 && flex scanner2.l && gcc lex.yy.c -o scanner2 && ./scanner2 < entrada.txt | grep -q 'longitud 3'",
+      "input": "", "output": "", "comparison": "included",
+      "timeout": 30, "points": 5
+    },
+    {
+      "name": "E2. Longitud correcta para 'miVariable' (10 caracteres)",
+      "setup": "apt-get install -y flex gcc > /dev/null 2>&1 || true",
+      "run": "cd ejercicio2 && flex scanner2.l && gcc lex.yy.c -o scanner2 && ./scanner2 < entrada.txt | grep -q 'longitud 10'",
+      "input": "", "output": "", "comparison": "included",
+      "timeout": 30, "points": 5
+    },
+    {
+      "name": "E3. scanner3.l compila con misfunciones.c",
+      "setup": "apt-get install -y flex gcc > /dev/null 2>&1 || true",
+      "run": "cd ejercicio3 && flex scanner3.l && gcc lex.yy.c misfunciones.c -o scanner3",
+      "input": "", "output": "", "comparison": "included",
+      "timeout": 30, "points": 5
+    },
+    {
+      "name": "E3. Reconoce e imprime identificadores",
+      "setup": "apt-get install -y flex gcc > /dev/null 2>&1 || true",
+      "run": "cd ejercicio3 && flex scanner3.l && gcc lex.yy.c misfunciones.c -o scanner3 && ./scanner3 < entrada.txt | grep -q 'identificador: abc'",
+      "input": "", "output": "", "comparison": "included",
+      "timeout": 30, "points": 5
+    },
+    {
+      "name": "E3. Contador de tokens correcto (4 tokens)",
+      "setup": "apt-get install -y flex gcc > /dev/null 2>&1 || true",
+      "run": "cd ejercicio3 && flex scanner3.l && gcc lex.yy.c misfunciones.c -o scanner3 && ./scanner3 < entrada.txt | grep -q 'Tokens totales: 4'",
+      "input": "", "output": "", "comparison": "included",
+      "timeout": 30, "points": 10
+    },
+    {
+      "name": "E3. Llama a duplicar() correctamente (El doble es: 8)",
+      "setup": "apt-get install -y flex gcc > /dev/null 2>&1 || true",
+      "run": "cd ejercicio3 && flex scanner3.l && gcc lex.yy.c misfunciones.c -o scanner3 && ./scanner3 < entrada.txt | grep -q 'El doble es: 8'",
+      "input": "", "output": "", "comparison": "included",
+      "timeout": 30, "points": 5
+    },
+    {
+      "name": "E4. scanner4.l compila",
+      "setup": "apt-get install -y flex gcc > /dev/null 2>&1 || true",
+      "run": "cd ejercicio4 && flex scanner4.l && gcc lex.yy.c -o scanner4",
+      "input": "", "output": "", "comparison": "included",
+      "timeout": 30, "points": 5
+    },
+    {
+      "name": "E4. Retorna y muestra token NUMBER",
+      "setup": "apt-get install -y flex gcc > /dev/null 2>&1 || true",
+      "run": "cd ejercicio4 && flex scanner4.l && gcc lex.yy.c -o scanner4 && echo '42' | ./scanner4 | grep -q 'TOKEN NUMBER'",
+      "input": "", "output": "", "comparison": "included",
+      "timeout": 30, "points": 5
+    },
+    {
+      "name": "E4. Retorna y muestra token IDENT",
+      "setup": "apt-get install -y flex gcc > /dev/null 2>&1 || true",
+      "run": "cd ejercicio4 && flex scanner4.l && gcc lex.yy.c -o scanner4 && echo 'miVar' | ./scanner4 | grep -q 'TOKEN IDENT'",
+      "input": "", "output": "", "comparison": "included",
+      "timeout": 30, "points": 5
+    },
+    {
+      "name": "P1. Regla por defecto de Flex",
+      "setup": "",
+      "run": "grep -qE '^P1=ECHO$' README.md",
+      "input": "", "output": "", "comparison": "included",
+      "timeout": 10, "points": 4
+    },
+    {
+      "name": "P2. Desempate entre reglas de igual longitud",
+      "setup": "",
+      "run": "grep -qE '^P2=LA_PRIMERA$' README.md",
+      "input": "", "output": "", "comparison": "included",
+      "timeout": 10, "points": 3
+    },
+    {
+      "name": "P3. Variable yyleng",
+      "setup": "",
+      "run": "grep -qiE '^P3=SI$' README.md",
+      "input": "", "output": "", "comparison": "included",
+      "timeout": 10, "points": 3
+    }
+  ]
+}
