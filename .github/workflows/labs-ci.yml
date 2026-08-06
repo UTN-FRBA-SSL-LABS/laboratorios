@@ -112,7 +112,7 @@ jobs:
           ejecutar_todos=false
           for archivo in "${ARCHIVOS[@]}"; do
             case "$archivo" in
-              .github/*|.github/**/*|scripts/*|scripts/**/*|Makefile|.grading-protected|.grading-version|docs/GRADING.md|docs/AUTORESTAURACION.md)
+              .github/*|.github/**/*|scripts/*|scripts/**/*|Makefile|.grading-protected|.grading-version)
                 ejecutar_todos=true
                 break
                 ;;

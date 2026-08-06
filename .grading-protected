@@ -2,14 +2,12 @@
 .github/
 scripts/
 
-# Infraestructura y documentación común.
+# Infraestructura común.
 Makefile
 README.md
 .gitignore
 .grading-protected
 .grading-version
-docs/GRADING.md
-docs/AUTORESTAURACION.md
 
 # Archivos docentes dentro de cada laboratorio.
 labs/*/.gitignore
