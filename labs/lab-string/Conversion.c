@@ -6,7 +6,7 @@
  * REGLA: no usar atoi, strtol ni ninguna funcion estandar de conversion
  */
 
-/* ── ToInteger — completar siguiendo el readme.md ───────────────────────── */
+/* ── ToInteger — completar siguiendo el README.md ───────────────────────── */
 
 int ToInteger(const char *s) {
     int signo     = 1;

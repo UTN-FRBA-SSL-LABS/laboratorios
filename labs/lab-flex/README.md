@@ -1,5 +1,21 @@
 # Laboratorio: Introducción a Flex
 
+## Verificación y calificación
+
+Desde la raíz del repositorio ejecutá:
+
+```bash
+make grade LAB=lab-flex
+```
+
+Si ya estás dentro de esta carpeta también podés usar `make test`. Ambos
+comandos ejecutan los mismos checks y muestran el puntaje sin necesidad de hacer
+push. La verificación oficial se ejecuta cuando cambia `labs/lab-flex/`; la nota
+queda en el resumen y en los artefactos de GitHub Actions.
+
+No modifiques `.github/`, `scripts/` ni `test_local.sh`: son infraestructura
+docente protegida y no forman parte de la entrega.
+
 ## Objetivo
 
 Familiarizarse con el uso de Flex para construir analizadores léxicos. A lo largo del laboratorio vas a trabajar con los conceptos centrales: `yytext`, la regla comodín, definiciones ERX, `yyleng`, variables globales, funciones de usuario y retorno de tokens.

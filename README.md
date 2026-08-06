@@ -33,6 +33,11 @@ La salida legible y el JSON quedan en `calificaciones/`. Los verificadores
 consideran aprobado un puntaje de 60 o más; se puede ensayar otro mínimo con
 `MIN_SCORE=80 make grade LAB=lab-flex`.
 
+La **nota oficial** se calcula con la versión de los tests mantenida en `main`
+del repositorio docente, no con una eventual copia modificada por el estudiante.
+Cuando cambia infraestructura compartida —el workflow, `scripts/grade-lab.sh` o
+el `Makefile` raíz— se ejecutan los siete labs como prueba de regresión.
+
 ## Forma de trabajo
 
 1. Clonar este repositorio una sola vez.
@@ -43,4 +48,6 @@ consideran aprobado un puntaje de 60 o más; se puede ensayar otro mínimo con
 
 La procedencia de cada carpeta y las decisiones de migración están documentadas
 en [`docs/MIGRACION.md`](docs/MIGRACION.md). El formato y consumo automático de
-notas se describe en [`docs/CALIFICACIONES.md`](docs/CALIFICACIONES.md).
+notas se describe en [`docs/GRADING.md`](docs/GRADING.md).
+Las protecciones de archivos y de la rama `main` se describen en
+[`docs/PROTECCIONES.md`](docs/PROTECCIONES.md).

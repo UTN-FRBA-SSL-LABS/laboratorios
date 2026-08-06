@@ -15,7 +15,7 @@ int IsEmpty(const char *s) {
     return *s == '\0';
 }
 
-/* ── GetLength — implementar siguiendo el readme.md ─────────────────────── */
+/* ── GetLength — implementar siguiendo el README.md ─────────────────────── */
 
 int GetLength(const char *s) {
     (void)s;
@@ -50,4 +50,3 @@ int Contains(const char *s, char c) {
     (void)s; (void)c;
     return 0;  /* reemplazar con la implementacion */
 }
-

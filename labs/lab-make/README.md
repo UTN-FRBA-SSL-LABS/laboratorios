@@ -1,5 +1,22 @@
 # Laboratorio: Make y Makefile
 
+## Verificación y calificación
+
+Desde la raíz del repositorio ejecutá:
+
+```bash
+make grade LAB=lab-make
+```
+
+Si ya estás dentro de esta carpeta también podés usar `make test`. Ambos
+comandos ejecutan los mismos checks y muestran el puntaje sin necesidad de hacer
+push. La verificación oficial se ejecuta cuando cambia `labs/lab-make/`; la nota
+queda en el resumen y en los artefactos de GitHub Actions.
+
+No modifiques `.github/`, `scripts/` ni `test_local.sh`: son infraestructura
+docente protegida y no forman parte de la entrega. Los `Makefile` de los
+ejercicios sí son parte de este laboratorio y deben completarse.
+
 ## Objetivo
 
 Familiarizarse con la herramienta **Make** y la escritura de **Makefiles** para automatizar

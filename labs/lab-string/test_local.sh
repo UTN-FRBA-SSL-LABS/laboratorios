@@ -95,8 +95,8 @@ check P5 "suma: salida correcta" 9 \
 # ── Archivos con contenido (sin puntaje oficial) ───
 echo ""
 echo "  — Checks informativos (sin puntaje) —"
-check F1 "readme.md análisis completado" 0 \
-  bash -c "! grep -q '(respuesta)' readme.md"
+check F1 "README.md análisis completado" 0 \
+  bash -c "! grep -q '(respuesta)' README.md"
 
 check F2 "String.md completado" 0 \
   bash -c "test -s String.md && ! grep -q 'completar' String.md"

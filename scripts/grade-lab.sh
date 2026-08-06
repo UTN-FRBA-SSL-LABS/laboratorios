@@ -1,10 +1,11 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+GRADING_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+SUBMISSION_ROOT="${SUBMISSION_ROOT:-$GRADING_ROOT}"
 LAB="${1:-}"
 MIN_SCORE="${MIN_SCORE:-60}"
-GRADE_DIR="${GRADE_DIR:-$ROOT_DIR/calificaciones}"
+GRADE_DIR="${GRADE_DIR:-$SUBMISSION_ROOT/calificaciones}"
 
 usage() {
   echo "Uso: $0 <laboratorio>"
@@ -36,11 +37,12 @@ fi
 mkdir -p "$GRADE_DIR"
 LOG_FILE="$GRADE_DIR/$LAB.log"
 JSON_FILE="$GRADE_DIR/$LAB.json"
+MD_FILE="$GRADE_DIR/$LAB.md"
 
 set +e
 (
-  cd "$ROOT_DIR/labs/$LAB"
-  MIN_SCORE="$MIN_SCORE" bash test_local.sh
+  cd "$SUBMISSION_ROOT/labs/$LAB"
+  MIN_SCORE="$MIN_SCORE" bash "$GRADING_ROOT/labs/$LAB/test_local.sh"
 ) 2>&1 | tee "$LOG_FILE"
 TEST_STATUS=${PIPESTATUS[0]}
 set -e
@@ -85,11 +87,14 @@ json_escape() {
 }
 
 REPOSITORY="${GITHUB_REPOSITORY:-local}"
-COMMIT_SHA="${GITHUB_SHA:-$(git -C "$ROOT_DIR" rev-parse HEAD 2>/dev/null || echo unknown)}"
-REF_NAME="${GITHUB_REF_NAME:-$(git -C "$ROOT_DIR" branch --show-current 2>/dev/null || echo local)}"
+COMMIT_SHA="${GITHUB_SHA:-$(git -C "$SUBMISSION_ROOT" rev-parse HEAD 2>/dev/null || echo unknown)}"
+REF_NAME="${GITHUB_REF_NAME:-$(git -C "$SUBMISSION_ROOT" branch --show-current 2>/dev/null || echo local)}"
 ACTOR="${GITHUB_ACTOR:-${USER:-local}}"
 RUN_ID="${GITHUB_RUN_ID:-}"
 RUN_ATTEMPT="${GITHUB_RUN_ATTEMPT:-}"
+WORKFLOW="${GITHUB_WORKFLOW:-local}"
+GRADER_REPOSITORY="${GRADER_REPOSITORY:-UTN-FRBA-SSL-LABS/laboratorios}"
+GRADER_COMMIT_SHA="$(git -C "$GRADING_ROOT" rev-parse HEAD 2>/dev/null || echo unknown)"
 TIMESTAMP="$(date -u +'%Y-%m-%dT%H:%M:%SZ')"
 
 {
@@ -108,12 +113,36 @@ TIMESTAMP="$(date -u +'%Y-%m-%dT%H:%M:%SZ')"
   printf '  "actor": "%s",\n' "$(json_escape "$ACTOR")"
   printf '  "run_id": "%s",\n' "$(json_escape "$RUN_ID")"
   printf '  "run_attempt": "%s",\n' "$(json_escape "$RUN_ATTEMPT")"
+  printf '  "workflow": "%s",\n' "$(json_escape "$WORKFLOW")"
+  printf '  "grader_repository": "%s",\n' "$(json_escape "$GRADER_REPOSITORY")"
+  printf '  "grader_commit_sha": "%s",\n' "$(json_escape "$GRADER_COMMIT_SHA")"
   printf '  "generated_at": "%s"\n' "$TIMESTAMP"
   printf '}\n'
 } > "$JSON_FILE"
 
+{
+  echo "# Calificación · $LAB"
+  echo ""
+  echo "| Campo | Valor |"
+  echo "| --- | --- |"
+  echo "| Nota | **$SCORE / $MAX_SCORE** |"
+  echo "| Estado | **$STATUS** |"
+  echo "| Puntaje mínimo | $MIN_SCORE |"
+  echo "| Repositorio | \`$REPOSITORY\` |"
+  echo "| Commit | \`$COMMIT_SHA\` |"
+  echo "| Rama | \`$REF_NAME\` |"
+  echo "| Usuario | \`$ACTOR\` |"
+  echo "| Grader oficial | \`$GRADER_REPOSITORY@$GRADER_COMMIT_SHA\` |"
+  echo "| Generada | $TIMESTAMP |"
+  if [[ "$COMPLETE" == "false" ]]; then
+    echo ""
+    echo "> Nota local parcial: hay checks remotos que requieren autenticación con GitHub."
+  fi
+} > "$MD_FILE"
+
 echo ""
 echo "Calificación guardada en: $JSON_FILE"
+echo "Resumen guardado en: $MD_FILE"
 echo "Resultado: $SCORE / $MAX_SCORE — $STATUS"
 
 if [[ -n "${GITHUB_OUTPUT:-}" ]]; then
@@ -123,6 +152,7 @@ if [[ -n "${GITHUB_OUTPUT:-}" ]]; then
     echo "passed=$PASSED"
     echo "status=$STATUS"
     echo "json_file=$JSON_FILE"
+    echo "markdown_file=$MD_FILE"
     echo "log_file=$LOG_FILE"
   } >> "$GITHUB_OUTPUT"
 fi

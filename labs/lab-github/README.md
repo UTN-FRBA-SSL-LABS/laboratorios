@@ -1,5 +1,22 @@
 # Laboratorio: Git y GitHub
 
+## Verificación y calificación
+
+Desde la raíz del repositorio ejecutá:
+
+```bash
+make grade LAB=lab-github
+```
+
+Si ya estás dentro de esta carpeta también podés usar `make test`. Ambos
+comandos ejecutan los mismos checks y muestran el puntaje sin necesidad de hacer
+push. Algunos checks de PRs y reviews requieren `gh auth login`; el grading de
+GitHub Actions sí los ejecuta. La nota oficial queda en el resumen y en los
+artefactos de la ejecución.
+
+No modifiques `.github/`, `scripts/` ni `test_local.sh`: son infraestructura
+docente protegida y no forman parte de la entrega.
+
 ## Antes de empezar
 
 ### ¿Por qué Git? ¿Por qué hacerlo bien?
@@ -75,7 +92,7 @@ Vas a ver que `multiplicar` devuelve 0 — eso es lo esperado, es lo que vas a i
 
 A lo largo del laboratorio vas a encontrar **7 preguntas de selección múltiple** (P1 a P7). Cada una tiene cuatro opciones: `a)`, `b)`, `c)` o `d)`.
 
-Para responder, **editá este archivo** (`readme.md`) y escribí la letra elegida en el campo `RESPUESTA_PX=`, inmediatamente después del signo `=`.
+Para responder, **editá este archivo** (`README.md`) y escribí la letra elegida en el campo `RESPUESTA_PX=`, inmediatamente después del signo `=`.
 
 **Ejemplo:** si la respuesta fuera la opción b), el campo debe quedar exactamente así:
 

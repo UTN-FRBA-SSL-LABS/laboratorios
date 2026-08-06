@@ -1,0 +1,8 @@
+# Infraestructura docente. Estos paths requieren aprobación del propietario
+# cuando la rama main tiene habilitado "Require review from Code Owners".
+/.github/ @santiagoferreiros
+/scripts/ @santiagoferreiros
+/Makefile @santiagoferreiros
+/docs/GRADING.md @santiagoferreiros
+/docs/PROTECCIONES.md @santiagoferreiros
+/labs/*/test_local.sh @santiagoferreiros

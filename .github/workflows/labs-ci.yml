@@ -105,6 +105,14 @@ jobs:
       - name: Checkout del repositorio
         uses: actions/checkout@v4
 
+      - name: Descargar grading oficial
+        uses: actions/checkout@v4
+        with:
+          repository: UTN-FRBA-SSL-LABS/laboratorios
+          ref: main
+          path: .grading
+          persist-credentials: false
+
       - name: Instalar dependencias
         shell: bash
         run: |
@@ -133,7 +141,8 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           GRADE_DIR: ${{ runner.temp }}/calificaciones
           MIN_SCORE: "60"
-        run: ./scripts/grade-lab.sh "${{ matrix.lab }}"
+          SUBMISSION_ROOT: ${{ github.workspace }}
+        run: ./.grading/scripts/grade-lab.sh "${{ matrix.lab }}"
 
       - name: Escribir nota en el resumen
         if: always()
@@ -157,6 +166,7 @@ jobs:
           name: calificacion-${{ matrix.lab }}
           path: |
             ${{ runner.temp }}/calificaciones/${{ matrix.lab }}.json
+            ${{ runner.temp }}/calificaciones/${{ matrix.lab }}.md
             ${{ runner.temp }}/calificaciones/${{ matrix.lab }}.log
           if-no-files-found: error
           retention-days: 30
@@ -196,10 +206,22 @@ jobs:
             done
           } >> "$GITHUB_STEP_SUMMARY"
 
+          {
+            echo "# Calificaciones del push"
+            echo ""
+            echo "| Laboratorio | Nota | Estado |"
+            echo "| --- | ---: | --- |"
+            for archivo in calificaciones/*.json; do
+              jq -r '"| \(.lab) | \(.score) / \(.max_score) | \(.status) |"' "$archivo"
+            done
+          } > calificaciones.md
+
       - name: Guardar notas consolidadas
         uses: actions/upload-artifact@v4
         with:
           name: calificaciones
-          path: calificaciones.json
+          path: |
+            calificaciones.json
+            calificaciones.md
           if-no-files-found: error
           retention-days: 30

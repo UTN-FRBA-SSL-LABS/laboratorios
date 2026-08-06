@@ -116,25 +116,25 @@ fi
 
 # ── C15–C21. Preguntas conceptuales ───────────────
 check C15 "P1: concepto de branches" 3 \
-  bash -c "grep -q 'RESPUESTA_P1=b' readme.md"
+  bash -c "grep -q 'RESPUESTA_P1=b' README.md"
 
 check C16 "P2: flujo de review" 3 \
-  bash -c "grep -q 'RESPUESTA_P2=b' readme.md"
+  bash -c "grep -q 'RESPUESTA_P2=b' README.md"
 
 check C17 "P3: revert vs reset" 3 \
-  bash -c "grep -q 'RESPUESTA_P3=c' readme.md"
+  bash -c "grep -q 'RESPUESTA_P3=c' README.md"
 
 check C18 "P4: implementaciones de esPar" 3 \
-  bash -c "grep -q 'RESPUESTA_P4=b' readme.md"
+  bash -c "grep -q 'RESPUESTA_P4=b' README.md"
 
 check C19 "P5: commits atomicos" 3 \
-  bash -c "grep -q 'RESPUESTA_P5=c' readme.md"
+  bash -c "grep -q 'RESPUESTA_P5=c' README.md"
 
 check C20 "P6: fetch vs pull" 3 \
-  bash -c "grep -q 'RESPUESTA_P6=b' readme.md"
+  bash -c "grep -q 'RESPUESTA_P6=b' README.md"
 
 check C21 "P7: descripcion de PR" 3 \
-  bash -c "grep -q 'RESPUESTA_P7=c' readme.md"
+  bash -c "grep -q 'RESPUESTA_P7=c' README.md"
 
 # ── Resumen ────────────────────────────────────────
 echo ""

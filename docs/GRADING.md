@@ -1,4 +1,4 @@
-# Calificaciones
+# Grading y calificaciones
 
 El grading local y el de GitHub Actions usan el mismo comando:
 
@@ -10,6 +10,7 @@ El resultado se muestra en la terminal y también se guarda en:
 
 - `calificaciones/lab-flex.log`: salida completa de los checks.
 - `calificaciones/lab-flex.json`: nota y metadatos listos para automatización.
+- `calificaciones/lab-flex.md`: resumen legible de la nota.
 
 La carpeta `calificaciones/` está ignorada por Git para evitar que una
 verificación local genere commits accidentales.
@@ -19,13 +20,17 @@ está autenticado localmente, el JSON usa `complete: false` y refleja solamente
 los puntos verificables. En GitHub Actions esos checks se ejecutan con el token
 de lectura del repositorio y la nota queda completa.
 
+Estos archivos locales son solo una ayuda para el estudiante. La nota oficial
+se vuelve a generar desde cero después de cada push y se publica como artefacto;
+no existe un archivo de nota versionado que el estudiante pueda editar.
+
 ## Salida de GitHub Actions
 
 Ante cada push, el workflow detecta qué carpetas cambiaron y ejecuta solamente
 esos laboratorios. La nota queda disponible de tres maneras:
 
 1. En el **Job summary**, como tabla legible desde la ejecución del workflow.
-2. En el artefacto `calificacion-<laboratorio>`, con el JSON y el log de ese lab.
+2. En el artefacto `calificacion-<laboratorio>`, con Markdown, JSON y log.
 3. En el artefacto `calificaciones`, con un único `calificaciones.json` que
    reúne todas las notas producidas por ese push.
 
@@ -47,13 +52,17 @@ Ejemplo de registro:
   "actor": "usuario-github",
   "run_id": "123456789",
   "run_attempt": "1",
+  "workflow": "Grading de laboratorios",
+  "grader_repository": "UTN-FRBA-SSL-LABS/laboratorios",
+  "grader_commit_sha": "def456...",
   "generated_at": "2026-08-06T18:00:00Z"
 }
 ```
 
 ## Consumo desde una planilla
 
-La automatización puede consultar los artefactos del repositorio con la API de
+La automatización debe consultar solo ejecuciones de la rama `main` del workflow
+`Grading de laboratorios`. Puede consultar los artefactos con la API de
 GitHub, localizar el artefacto más reciente llamado `calificaciones`, descargar
 el ZIP y leer `calificaciones.json`. Conviene guardar en la planilla la clave
 compuesta por `repository + lab + commit_sha` para que el proceso sea idempotente
