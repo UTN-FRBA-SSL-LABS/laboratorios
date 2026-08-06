@@ -160,3 +160,9 @@ if ! $GH_OK; then
   echo "  Después volvé a correr make test."
 fi
 echo ""
+
+MIN_SCORE="${MIN_SCORE:-60}"
+if ((SCORE < MIN_SCORE)); then
+  echo -e "${RED}Puntaje insuficiente: $SCORE / 100 (mínimo $MIN_SCORE).${RESET}"
+  exit 1
+fi

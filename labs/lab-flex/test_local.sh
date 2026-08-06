@@ -114,3 +114,9 @@ echo -e "  Puntaje local: ${SCORE} / 100"
 echo "  ✅ $PASS   ❌ $FAIL"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo ""
+
+MIN_SCORE="${MIN_SCORE:-60}"
+if ((SCORE < MIN_SCORE)); then
+  echo -e "${RED}Puntaje insuficiente: $SCORE / 100 (mínimo $MIN_SCORE).${RESET}"
+  exit 1
+fi

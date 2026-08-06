@@ -32,9 +32,10 @@ Una vez que aceptaste el assignment en GitHub Classroom, GitHub crea una copia d
 ```bash
 git clone <URL-de-tu-repo>
 cd <nombre-del-repo>
+cd labs/lab-github
 ```
 
-> El nombre del directorio clonado es el nombre de tu repo en GitHub Classroom (ej: `lab-github-juan-perez`), no necesariamente `lab-github`.
+> El primer directorio es el nombre de tu repositorio personal. El laboratorio está dentro de `labs/lab-github/`.
 
 Verificá el estado inicial:
 
@@ -283,7 +284,7 @@ b) Para poder trabajar en un cambio de forma aislada, sin afectar el código est
 
 c) Para que el historial de commits sea más corto y lineal
 
-d) Porque GitHub Classroom lo requiere para la corrección automática
+d) Porque la plataforma lo requiere para poder crear el pull request
 
 ```
 RESPUESTA_P1=
@@ -321,6 +322,7 @@ El **compañero** hace estos pasos:
 ```bash
 git clone <URL-del-repo-del-owner>
 cd <nombre-del-repo>
+cd labs/lab-github
 git switch -c sugerencia/<tu-nombre>
 ```
 
@@ -727,9 +729,9 @@ Una vez autenticado con `gh auth login`, `make test` puede verificar el 100% de 
 
 **Flujo recomendado:** hacé commits frecuentes mientras avanzás, usá `make test` para verificar tu progreso, y dejá el push para cuando una parte esté realmente lista.
 
-### Corrección automática
+### Integración continua
 
-Cuando pusheás cambios en `operaciones.c` o `readme.md`, GitHub ejecuta el workflow de corrección que valida los mismos checks y calcula tu puntaje oficial.
+Cuando pusheás cambios dentro de `labs/lab-github/`, el workflow central del monorepo ejecuta los mismos checks y valida el puntaje mínimo.
 
 > ⚠️ **Evitá pushes innecesarios.** Cada ejecución consume cómputo en servidores de GitHub — un recurso compartido. `make test` te da el mismo resultado en tu terminal sin costo.
 
@@ -737,7 +739,7 @@ Para ver los resultados:
 
 1. Entrá a tu repositorio en GitHub
 2. Hacé click en la pestaña **Actions**
-3. Hacé click en la ejecución más reciente → job **Autograding**
+3. Hacé click en la ejecución más reciente → job **CI · lab-github**
 4. Al final del job vas a ver la tabla con el resultado de cada check y el puntaje total
 
 También podés ver un resumen rápido: en la pestaña **Code**, junto a cada commit aparece un ícono ✅ (todos los checks pasaron) o ❌ (alguno falló). Hacé click en ese ícono para ver el detalle.

@@ -1,0 +1,143 @@
+name: CI de laboratorios
+
+on:
+  push:
+    branches:
+      - "**"
+    paths:
+      - "labs/**"
+      - ".github/workflows/labs-ci.yml"
+  pull_request:
+    paths:
+      - "labs/**"
+      - ".github/workflows/labs-ci.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  detectar-cambios:
+    name: Detectar laboratorios modificados
+    runs-on: ubuntu-latest
+    outputs:
+      labs: ${{ steps.detectar.outputs.labs }}
+      hay_cambios: ${{ steps.detectar.outputs.hay_cambios }}
+    steps:
+      - name: Checkout del repositorio
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Construir matriz de laboratorios
+        id: detectar
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          BEFORE_SHA: ${{ github.event.before }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          TODOS=(
+            lab-github
+            lab-compilacion-c
+            lab-string
+            laboratorio-testing-c
+            lab-make
+            lab-flex
+            lab-bison
+          )
+          CAMBIADOS=()
+
+          if [[ "$EVENT_NAME" == "workflow_dispatch" ]]; then
+            CAMBIADOS=("${TODOS[@]}")
+          else
+            if [[ "$EVENT_NAME" == "pull_request" ]]; then
+              INICIO="$BASE_SHA"
+              FIN="$HEAD_SHA"
+            else
+              INICIO="$BEFORE_SHA"
+              FIN="$HEAD_SHA"
+              if [[ -z "$INICIO" || "$INICIO" =~ ^0+$ ]]; then
+                INICIO="$(git hash-object -t tree /dev/null)"
+              fi
+            fi
+
+            mapfile -t ARCHIVOS < <(git diff --name-only "$INICIO" "$FIN")
+
+            ejecutar_todos=false
+            for archivo in "${ARCHIVOS[@]}"; do
+              if [[ "$archivo" == ".github/workflows/labs-ci.yml" ]]; then
+                ejecutar_todos=true
+                break
+              fi
+            done
+
+            if [[ "$ejecutar_todos" == "true" ]]; then
+              CAMBIADOS=("${TODOS[@]}")
+            else
+              for lab in "${TODOS[@]}"; do
+                for archivo in "${ARCHIVOS[@]}"; do
+                  if [[ "$archivo" == "labs/$lab/"* ]]; then
+                    CAMBIADOS+=("$lab")
+                    break
+                  fi
+                done
+              done
+            fi
+          fi
+
+          if ((${#CAMBIADOS[@]} == 0)); then
+            JSON='[]'
+            echo "hay_cambios=false" >> "$GITHUB_OUTPUT"
+          else
+            JSON="$(printf '%s\n' "${CAMBIADOS[@]}" | jq -R . | jq -cs .)"
+            echo "hay_cambios=true" >> "$GITHUB_OUTPUT"
+          fi
+
+          echo "labs=$JSON" >> "$GITHUB_OUTPUT"
+          echo "Laboratorios seleccionados: $JSON"
+
+  verificar:
+    name: CI · ${{ matrix.lab }}
+    needs: detectar-cambios
+    if: needs.detectar-cambios.outputs.hay_cambios == 'true'
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        lab: ${{ fromJSON(needs.detectar-cambios.outputs.labs) }}
+
+    steps:
+      - name: Checkout del repositorio
+        uses: actions/checkout@v4
+
+      - name: Instalar dependencias
+        shell: bash
+        run: |
+          set -euo pipefail
+          case "${{ matrix.lab }}" in
+            lab-bison|lab-make)
+              paquetes=(gcc make flex bison)
+              ;;
+            lab-flex)
+              paquetes=(gcc make flex)
+              ;;
+            lab-compilacion-c)
+              paquetes=(gcc make binutils)
+              ;;
+            *)
+              paquetes=(gcc make)
+              ;;
+          esac
+          sudo apt-get update
+          sudo apt-get install -y "${paquetes[@]}"
+
+      - name: Ejecutar verificación
+        env:
+          GH_TOKEN: ${{ github.token }}
+          MIN_SCORE: "60"
+        working-directory: labs/${{ matrix.lab }}
+        run: make test

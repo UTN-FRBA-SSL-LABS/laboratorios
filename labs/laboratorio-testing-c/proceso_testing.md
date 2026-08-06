@@ -387,9 +387,9 @@ git commit -m "Agrego tests y corrijo bugs en carrito"
 git push
 ```
 
-### Corrección automática
+### Integración continua
 
-Cuando pusheás cambios en `src/`, `tests/`, `salidas/` o `proceso_testing.md`, GitHub ejecuta el workflow de corrección que valida los mismos checks y calcula tu puntaje oficial.
+Cuando pusheás cambios dentro de `labs/laboratorio-testing-c/`, el workflow central del monorepo ejecuta los mismos checks y valida el puntaje mínimo.
 
 > ⚠️ **Evitá pushes innecesarios.** Cada ejecución consume cómputo en servidores de GitHub — un recurso compartido. `make test` te da el mismo resultado en tu terminal sin costo.
 
@@ -397,7 +397,7 @@ Para ver los resultados:
 
 1. Entrá a tu repositorio en GitHub
 2. Hacé click en la pestaña **Actions**
-3. Hacé click en la ejecución más reciente → job **Autograding**
+3. Hacé click en la ejecución más reciente → job **CI · laboratorio-testing-c**
 4. Al final del job vas a ver la tabla con el resultado de cada check y el puntaje total
 
 ---

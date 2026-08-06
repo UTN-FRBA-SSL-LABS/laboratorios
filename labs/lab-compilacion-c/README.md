@@ -8,9 +8,9 @@
 
 ## Antes de empezar: ¿Cómo funciona este laboratorio?
 
-Este laboratorio se entrega a través de **GitHub Classroom**. Al aceptar el assignment se te creó un repositorio personal en la organización de la materia con todos los archivos necesarios.
+Este laboratorio se entrega a través del repositorio de laboratorios. Al aceptar el assignment se te creó un repositorio personal en la organización de la materia con todos los archivos necesarios.
 
-**El flujo es simple**: trabajás en `main`, verificás localmente con `make test`, y cuando está listo hacés push. GitHub ejecuta automáticamente el workflow de corrección y podés ver los resultados en la pestaña **Actions** de tu repositorio.
+**El flujo es simple**: trabajás en `main`, verificás localmente con `make test`, y cuando está listo hacés push. GitHub ejecuta el workflow central de CI y podés ver los resultados en la pestaña **Actions** de tu repositorio.
 
 **Opciones para trabajar:**
 - **Local:** clonar el repositorio en tu máquina con `git clone` y trabajar con el editor que prefieras.
@@ -25,6 +25,7 @@ En la página de tu repositorio en GitHub, hacé clic en **"Code"** y copiá la 
 ```bash
 git clone <URL-de-tu-repositorio>
 cd <nombre-de-la-carpeta>
+cd labs/lab-compilacion-c
 ```
 
 Verificar que están los archivos:
@@ -38,7 +39,7 @@ ls
 
 #### Paso 2: Ejecutar cada etapa del laboratorio
 
-Seguir la guía del laboratorio ejecutando los comandos de cada etapa. Algunos resultados hay que guardarlos en archivos para que el autograding pueda verificarlos. Antes de guardar las salidas, crear la carpeta donde van a estar:
+Seguir la guía del laboratorio ejecutando los comandos de cada etapa. Algunos resultados hay que guardarlos en archivos para que el verificador pueda revisarlos. Antes de guardar las salidas, crear la carpeta donde van a estar:
 
 ```bash
 mkdir salidas
@@ -97,12 +98,12 @@ git log --oneline
 Una vez que hiciste push, entrá a tu repositorio en GitHub:
 
 1. Hacé click en la pestaña **Actions**
-2. Hacé click en la ejecución más reciente → job **Autograding**
+2. Hacé click en la ejecución más reciente → job **CI · lab-compilacion-c**
 3. Al final del job vas a ver la tabla con el resultado de cada check y el puntaje total
 
-Si algún check falla, corregí el problema, commiteá y volvé a pushear — el workflow se re-ejecuta solo.
+Si algún check falla, corregí el problema, commiteá y volvé a pushear: el workflow se re-ejecuta solo.
 
-> ⚠️ **Evitá pushes innecesarios.** Cada ejecución consume cómputo en servidores de GitHub — un recurso compartido. El workflow solo se activa cuando pusheás cambios en archivos `.i`, `.s`, `.c`, `salidas/` o `proceso_compilacion.md`. Para el resto, `make test` te da el mismo resultado en tu terminal sin costo.
+> ⚠️ **Evitá pushes innecesarios.** Cada ejecución consume cómputo en servidores de GitHub — un recurso compartido. El workflow selecciona este laboratorio cuando cambia algún archivo dentro de `labs/lab-compilacion-c/`. Para el resto, `make test` te da el mismo resultado en tu terminal sin costo.
 
 ---
 
