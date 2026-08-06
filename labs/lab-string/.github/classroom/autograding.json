@@ -1,0 +1,88 @@
+{
+  "tests": [
+    {
+      "name": "C1. String.o compila",
+      "setup": "",
+      "run": "gcc -Wall -Wextra -std=c99 -c String.c -o String.o",
+      "input": "", "output": "", "comparison": "included",
+      "timeout": 10, "points": 3
+    },
+    {
+      "name": "C2. StringTest compila",
+      "setup": "gcc -Wall -Wextra -std=c99 -c String.c -o String.o",
+      "run": "gcc -Wall -Wextra -std=c99 StringTest.c String.o -o StringTest",
+      "input": "", "output": "", "comparison": "included",
+      "timeout": 10, "points": 3
+    },
+    {
+      "name": "C3. Conversion.o compila",
+      "setup": "gcc -Wall -Wextra -std=c99 -c String.c -o String.o",
+      "run": "gcc -Wall -Wextra -std=c99 -c Conversion.c -o Conversion.o",
+      "input": "", "output": "", "comparison": "included",
+      "timeout": 10, "points": 3
+    },
+    {
+      "name": "C4. ConversionTest compila",
+      "setup": "gcc -Wall -Wextra -std=c99 -c String.c -o String.o && gcc -Wall -Wextra -std=c99 -c Conversion.c -o Conversion.o",
+      "run": "gcc -Wall -Wextra -std=c99 ConversionTest.c Conversion.o String.o -o ConversionTest",
+      "input": "", "output": "", "comparison": "included",
+      "timeout": 10, "points": 3
+    },
+    {
+      "name": "C5. Todos los programas compilan",
+      "setup": "gcc -Wall -Wextra -std=c99 -c String.c -o String.o && gcc -Wall -Wextra -std=c99 -c Conversion.c -o Conversion.o",
+      "run": "gcc -Wall -Wextra -std=c99 enlineas.c -o enlineas && gcc -Wall -Wextra -std=c99 longitudes.c String.o -o longitudes && gcc -Wall -Wextra -std=c99 mayorlongitud.c String.o -o mayorlongitud && gcc -Wall -Wextra -std=c99 todosiguales.c String.o -o todosiguales && gcc -Wall -Wextra -std=c99 suma.c Conversion.o String.o -o suma",
+      "input": "", "output": "", "comparison": "included",
+      "timeout": 10, "points": 3
+    },
+    {
+      "name": "T1. StringTest pasa",
+      "setup": "gcc -Wall -Wextra -std=c99 -c String.c -o String.o && gcc -Wall -Wextra -std=c99 StringTest.c String.o -o StringTest",
+      "run": "./StringTest",
+      "input": "", "output": "", "comparison": "included",
+      "timeout": 10, "points": 25
+    },
+    {
+      "name": "T2. ConversionTest pasa",
+      "setup": "gcc -Wall -Wextra -std=c99 -c String.c -o String.o && gcc -Wall -Wextra -std=c99 -c Conversion.c -o Conversion.o && gcc -Wall -Wextra -std=c99 ConversionTest.c Conversion.o String.o -o ConversionTest",
+      "run": "./ConversionTest",
+      "input": "", "output": "", "comparison": "included",
+      "timeout": 10, "points": 15
+    },
+    {
+      "name": "P1. enlineas: salida correcta",
+      "setup": "gcc -Wall -Wextra -std=c99 enlineas.c -o enlineas",
+      "run": "./enlineas hola mundo | grep -x 'hola' && ./enlineas hola mundo | grep -x 'mundo'",
+      "input": "", "output": "", "comparison": "included",
+      "timeout": 5, "points": 9
+    },
+    {
+      "name": "P2. longitudes: salida correcta",
+      "setup": "gcc -Wall -Wextra -std=c99 -c String.c -o String.o && gcc -Wall -Wextra -std=c99 longitudes.c String.o -o longitudes",
+      "run": "./longitudes hola | grep -x '4'",
+      "input": "", "output": "", "comparison": "included",
+      "timeout": 5, "points": 9
+    },
+    {
+      "name": "P3. mayorlongitud: salida correcta",
+      "setup": "gcc -Wall -Wextra -std=c99 -c String.c -o String.o && gcc -Wall -Wextra -std=c99 mayorlongitud.c String.o -o mayorlongitud",
+      "run": "./mayorlongitud uno largo | grep -x 'largo'",
+      "input": "", "output": "", "comparison": "included",
+      "timeout": 5, "points": 9
+    },
+    {
+      "name": "P4. todosiguales: salida correcta",
+      "setup": "gcc -Wall -Wextra -std=c99 -c String.c -o String.o && gcc -Wall -Wextra -std=c99 todosiguales.c String.o -o todosiguales",
+      "run": "./todosiguales igual igual | grep -x '1' && ./todosiguales uno dos | grep -x '0'",
+      "input": "", "output": "", "comparison": "included",
+      "timeout": 5, "points": 9
+    },
+    {
+      "name": "P5. suma: salida correcta",
+      "setup": "gcc -Wall -Wextra -std=c99 -c String.c -o String.o && gcc -Wall -Wextra -std=c99 -c Conversion.c -o Conversion.o && gcc -Wall -Wextra -std=c99 suma.c Conversion.o String.o -o suma",
+      "run": "./suma 1 2 3 | grep -x '6'",
+      "input": "", "output": "", "comparison": "included",
+      "timeout": 5, "points": 9
+    }
+  ]
+}
