@@ -1,0 +1,214 @@
+{
+  "tests": [
+    {
+      "name": "C1. Proyecto compila",
+      "setup": "",
+      "run": "make clean && make",
+      "input": "",
+      "output": "",
+      "comparison": "included",
+      "timeout": 10,
+      "points": 4
+    },
+    {
+      "name": "C2. multiplicar implementada",
+      "setup": "",
+      "run": "! grep -q 'TODO' operaciones.c",
+      "input": "",
+      "output": "",
+      "comparison": "included",
+      "timeout": 5,
+      "points": 4
+    },
+    {
+      "name": "C3. multiplicar devuelve resultado correcto",
+      "setup": "make clean && make",
+      "run": "./calculadora | grep -q '3 \\* 5    = 15'",
+      "input": "",
+      "output": "",
+      "comparison": "included",
+      "timeout": 5,
+      "points": 8
+    },
+    {
+      "name": "C4. Commit wip: experimento roto existe",
+      "setup": "",
+      "run": "git log --all --format='%s' | grep -qF 'wip: experimento roto'",
+      "input": "",
+      "output": "",
+      "comparison": "included",
+      "timeout": 5,
+      "points": 8
+    },
+    {
+      "name": "C5. Revert del experimento existe",
+      "setup": "",
+      "run": "git log --all --format='%s' | grep -q '^Revert'",
+      "input": "",
+      "output": "",
+      "comparison": "included",
+      "timeout": 5,
+      "points": 8
+    },
+    {
+      "name": "C6. Sin conflict markers en operaciones.c",
+      "setup": "",
+      "run": "! grep -qE '^(<<<<<<<|=======|>>>>>>>)' operaciones.c",
+      "input": "",
+      "output": "",
+      "comparison": "included",
+      "timeout": 5,
+      "points": 8
+    },
+    {
+      "name": "C7. esPar funciona correctamente",
+      "setup": "make clean && make",
+      "run": "./calculadora | grep -q '4 es par = 1' && ./calculadora | grep -q '7 es par = 0'",
+      "input": "",
+      "output": "",
+      "comparison": "included",
+      "timeout": 5,
+      "points": 8
+    },
+    {
+      "name": "C8. Ningun mensaje de commit vacio o muy corto",
+      "setup": "",
+      "run": "! git log --format='%s' | grep -qE '^.{0,4}$'",
+      "input": "",
+      "output": "",
+      "comparison": "included",
+      "timeout": 5,
+      "points": 4
+    },
+    {
+      "name": "C9. Branch feature/mi-funcion fue creada",
+      "setup": "git fetch --all --quiet",
+      "run": "git branch -a | grep -q 'feature/mi-funcion' || gh pr list --state all --json headRefName --jq '.[].headRefName' | grep -q 'feature/mi-funcion'",
+      "input": "",
+      "output": "",
+      "comparison": "included",
+      "timeout": 15,
+      "points": 4
+    },
+    {
+      "name": "C10. PR de feature/mi-funcion a main mergeado",
+      "setup": "",
+      "run": "gh pr list --state merged --base main --json headRefName --jq '.[].headRefName' | grep -q 'feature/mi-funcion'",
+      "input": "",
+      "output": "",
+      "comparison": "included",
+      "timeout": 15,
+      "points": 4
+    },
+    {
+      "name": "C11. Branch sugerencia/* fue creada",
+      "setup": "git fetch --all --quiet",
+      "run": "git branch -a | grep -q 'sugerencia/' || gh pr list --state all --json headRefName --jq '.[].headRefName' | grep -q 'sugerencia/'",
+      "input": "",
+      "output": "",
+      "comparison": "included",
+      "timeout": 15,
+      "points": 4
+    },
+    {
+      "name": "C12. PR de sugerencia/* mergeado",
+      "setup": "",
+      "run": "gh pr list --state merged --base main --json headRefName --jq '.[].headRefName' | grep -q 'sugerencia/'",
+      "input": "",
+      "output": "",
+      "comparison": "included",
+      "timeout": 15,
+      "points": 4
+    },
+    {
+      "name": "C13. PR de sugerencia/* tiene al menos un review",
+      "setup": "",
+      "run": "PR=$(gh pr list --state merged --base main --json number,headRefName --jq '.[] | select(.headRefName | startswith(\"sugerencia/\")) | .number' | head -1) && [ -n \"$PR\" ] && [ \"$(gh pr view \"$PR\" --json reviews --jq '.reviews | length')\" -gt 0 ]",
+      "input": "",
+      "output": "",
+      "comparison": "included",
+      "timeout": 15,
+      "points": 4
+    },
+    {
+      "name": "C14. PR de sugerencia/* aprobado por otro usuario",
+      "setup": "",
+      "run": "PR=$(gh pr list --state merged --base main --json number,headRefName --jq '.[] | select(.headRefName | startswith(\"sugerencia/\")) | .number' | head -1) && [ -n \"$PR\" ] && [ \"$(gh pr view \"$PR\" --json reviews --jq '[.reviews[] | select(.state == \"APPROVED\")] | length')\" -gt 0 ]",
+      "input": "",
+      "output": "",
+      "comparison": "included",
+      "timeout": 15,
+      "points": 7
+    },
+    {
+      "name": "C15. P1: concepto de branches",
+      "setup": "",
+      "run": "grep -q 'RESPUESTA_P1=b' README.md",
+      "input": "",
+      "output": "",
+      "comparison": "included",
+      "timeout": 5,
+      "points": 3
+    },
+    {
+      "name": "C16. P2: flujo de review",
+      "setup": "",
+      "run": "grep -q 'RESPUESTA_P2=b' README.md",
+      "input": "",
+      "output": "",
+      "comparison": "included",
+      "timeout": 5,
+      "points": 3
+    },
+    {
+      "name": "C17. P3: revert vs reset",
+      "setup": "",
+      "run": "grep -q 'RESPUESTA_P3=c' README.md",
+      "input": "",
+      "output": "",
+      "comparison": "included",
+      "timeout": 5,
+      "points": 3
+    },
+    {
+      "name": "C18. P4: implementaciones de esPar",
+      "setup": "",
+      "run": "grep -q 'RESPUESTA_P4=b' README.md",
+      "input": "",
+      "output": "",
+      "comparison": "included",
+      "timeout": 5,
+      "points": 3
+    },
+    {
+      "name": "C19. P5: commits atomicos",
+      "setup": "",
+      "run": "grep -q 'RESPUESTA_P5=c' README.md",
+      "input": "",
+      "output": "",
+      "comparison": "included",
+      "timeout": 5,
+      "points": 3
+    },
+    {
+      "name": "C20. P6: fetch vs pull",
+      "setup": "",
+      "run": "grep -q 'RESPUESTA_P6=b' README.md",
+      "input": "",
+      "output": "",
+      "comparison": "included",
+      "timeout": 5,
+      "points": 3
+    },
+    {
+      "name": "C21. P7: descripcion de PR",
+      "setup": "",
+      "run": "grep -q 'RESPUESTA_P7=c' README.md",
+      "input": "",
+      "output": "",
+      "comparison": "included",
+      "timeout": 5,
+      "points": 3
+    }
+  ]
+}
