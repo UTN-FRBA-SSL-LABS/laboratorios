@@ -159,6 +159,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           ref: ${{ needs.detectar-cambios.outputs.submission_sha }}
+          fetch-depth: 0
 
       - name: Descargar grading oficial
         uses: actions/checkout@v4
